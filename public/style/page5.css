@@ -1,4 +1,4 @@
-button[type=button] {
+a {
     all: unset;
     background: var(--main-color-2);
     border-radius: 24px;
