@@ -1,0 +1,92 @@
+input[type=text] {
+    all: unset;
+    background: var(--secondary-color-1);
+    border: 2px solid var(--secondary-color-3);
+    border-radius: 10px;
+    color: var(--secondary-color-4);
+    display: block;
+    width: 80% !important;
+}
+
+input[type=text]:focus,
+input[type=date]:focus,
+input[type=time]:focus,
+select:focus {
+    border: 2px solid var(--main-color-2) !important;
+}
+
+select {
+    all: unset;
+    background: var(--secondary-color-1);
+    border: 2px solid var(--secondary-color-3);
+    border-radius: 10px;
+    color: var(--secondary-color-4);
+    display: block;
+    padding: 4px 8px;
+    width: 80% !important;
+}
+
+.control-icon {
+    height: 1rem;
+}
+
+input[type=number] {
+    all: unset;
+    background: var(--secondary-color-1);
+    color: var(--secondary-color-4);
+    display: block;
+    padding: 4px 8px;
+    text-align: center;
+    width: 30px !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.reminder {
+    flex: 1;
+}
+
+.input-label {
+    flex: 1.1;
+}
+
+.input-label~.d-flex,
+.input-label~input {
+    box-sizing: content-box;
+    width: 205px !important;
+}
+
+input[type=date],
+input[type=time] {
+    /* all: unset; */
+    background: var(--secondary-color-1);
+    border: 2px solid var(--secondary-color-3);
+    border-radius: 10px;
+    color: var(--secondary-color-4);
+    display: block;
+    flex: 2;
+}
+
+.number-input {
+    border: 2px solid var(--secondary-color-3);
+}
+
+.c-button {
+    border: none !important;
+    border-radius: 22px;
+    padding: 0.5rem 0;
+    width: 100% !important;
+}
+
+@media only screen and (max-width: 576px) {
+
+    .center-element {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+}

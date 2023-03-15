@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+:root {
+    --main-color-1: #81D0C3;
+    --main-color-2: #44C1C3;
+    --main-color-3: #2CA0A1;
+    --secondary-color-1: #ffffff;
+    --secondary-color-2: #F4F4F4;
+    --secondary-color-3: #B8B8B8;
+    --secondary-color-4: #363636;
+    --danger-color-1: #D64141;
+    --navbar-height: 60px;
+}
+
+.bg-main-color-1 {
+    background: var(--main-color-1);
+}
+
+.text-main-color-1 {
+    color: var(--main-color-1);
+}
+
+.bg-main-color-2 {
+    background: var(--main-color-2);
+}
+
+.text-main-color-2 {
+    color: var(--main-color-2);
+}
+
+.bg-main-color-3 {
+    background: var(--main-color-3);
+}
+
+.text-main-color-3 {
+    color: var(--main-color-3);
+}
+
+.bg-secondary-color-1 {
+    background: var(--secondary-color-1);
+}
+
+.text-secondary-color-1 {
+    color: var(--secondary-color-1);
+}
+
+.bg-secondary-color-2 {
+    background: var(--secondary-color-2);
+}
+
+.text-secondary-color-2 {
+    color: var(--secondary-color-2);
+}
+
+.bg-secondary-color-3 {
+    background: var(--secondary-color-3);
+}
+
+.text-secondary-color-3 {
+    color: var(--secondary-color-3);
+}
+
+.bg-secondary-color-4 {
+    background: var(--secondary-color-4);
+}
+
+.text-secondary-color-4 {
+    color: var(--secondary-color-4);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    align-items: center;
+    background: var(--secondary-color-2);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    position: relative;
+}
+
+.center-element {
+    background: var(--secondary-color-1);
+    box-sizing: border-box;
+    margin: auto;
+    min-height: 100vh;
+    padding: 4rem;
+    width: 480px;
+}
+
+.nav-margin {
+    margin-top: var(--navbar-height) !important;
+}
+
+.rounded-16 {
+    border-radius: 16px !important;
+}
+
+.rounded-9 {
+    border-radius: 9px !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 576px) {
+    .center-element {
+        width: 100% !important;
+    }
+}

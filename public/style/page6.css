@@ -1,0 +1,55 @@
+.form__text {
+    margin-bottom: 70px;
+    width: 100%;
+}
+
+input[type=text],
+input[type=password] {
+    all: unset;
+    background-color: var(--secondary-color-1);
+    border: 2px var(--secondary-color-3) solid;
+    border-radius: 7px;
+    box-sizing: border-box !important;
+    padding: 10px;
+    width: 100%;
+}
+
+.times-picker {
+    all: unset;
+    background: var(--secondary-color-1);
+    border: 2px solid var(--secondary-color-3);
+    border-radius: 10px;
+    color: var(--secondary-color-4);
+    display: block;
+    width: 80% !important;
+}
+
+.times-picker::before {
+    color: #9d9d9d;
+    margin-right: .6em;
+}
+
+.times-picker:nth-of-type(1)::before {
+    content: 'Time 1:';
+}
+
+.times-picker:nth-of-type(2)::before {
+    content: 'Time 2:';
+}
+
+.times-picker:nth-of-type(3)::before {
+    content: 'Time 3:';
+}
+
+.times-picker:nth-of-type(4)::before {
+    content: 'Time 4:';
+}
+
+@media only screen and (max-width: 576px) {
+
+    .center-element {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+}

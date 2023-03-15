@@ -1,0 +1,9 @@
+
+@media only screen and (max-width: 576px) {
+    
+    .center-element{
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+}
