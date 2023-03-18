@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const {
     getAuthorizationToken,
     getUser,
-    getResetUrlPayload,
-    hashValidator,
 } = require("../services/auth");
 const crypto = require("crypto");
 const loginRequired = async (req, res, next) => {
