@@ -25,7 +25,7 @@ exports.register = (req, res) => {
 exports.linkDevice = (req, res) => {
   const data = {
     styles: ["/style/page3.css"],
-    scripts: [],
+    scripts: ["/js/linkdevice.js"],
     title: "Medicine Box",
   };
   res.render("page3", data);
