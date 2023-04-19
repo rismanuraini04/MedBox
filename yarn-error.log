@@ -1,20 +1,20 @@
 Arguments: 
-  D:\Node Js\node.exe C:\Users\acer\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add body-parser
+  C:\Program Files\nodejs\node.exe C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add alarm
 
 PATH: 
-  C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;D:\MATLAB\runtime\win64;D:\MATLAB\bin;D:\MATLAB\polyspace\bin;C:\Program Files\Git\cmd;D:\Node Js\;"C:\Users\acer\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Java\jdk1.8.0_261\bin";"C:\Users\acer\AppData\Local\Programs\Microsoft VS Code\bin;D:\Java\bin";C:\Users\acer\AppData\Local\Programs\Microsoft VS Code\bin;D:\XAMPP\php;C:\Users\acer\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\Nmap;C:\Users\acer\AppData\Roaming\npm;C:\Users\acer\AppData\Local\Programs\Python\Python311\Scripts;D:\PostgreSQL\15\bin;
+  C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Program Files\PostgreSQL\14\bin;C:\Python310\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;D:\PEMROGRAMAN\WEB DEVELOPMENT\PHP\Server\mysql\bin;C:\Program Files\MongoDB\Server\5.0\bin;;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\LLVM\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Graphviz\bin;C:\Program Files\Go\bin;C:\Users\dimas\AppData\Local\Programs\Python\Python311\Scripts\;C:\Users\dimas\AppData\Local\Programs\Python\Python311\;C:\Users\dimas\AppData\Local\Microsoft\WindowsApps;C:\Users\dimas\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\dimas\AppData\Roaming\npm;C:\Program Files (x86)\Nmap;E:\PEMROGRAMAN\WEB DEVELOPMENT\PHP\Server\mysql\bin;C:\Program Files\PostgreSQL\14\bin;C:\Program Files\MongoDB\Server\5.0\bin;C:\Program Files\heroku\bin;C:\Program Files\Graphviz\bin;C:\Users\dimas\go\bin
 
 Yarn version: 
-  1.22.19
+  1.22.18
 
 Node version: 
-  18.12.0
+  16.14.0
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: EPERM: operation not permitted, rmdir 'D:\KULIAH\SEMESTER 7\FILE SKRIPSI PENTING\SKRIPSI\MedBox\node_modules\.bin'
+  Error: EPERM: operation not permitted, unlink 'D:\PEMROGRAMAN\WEB DEVELOPMENT\PROJECT\SMART-MEDICINE-SERVER\node_modules\prisma\engines\f352a33b70356f46311da8b00d83386dd9f145d6\query_engine-windows.dll.node'
 
 npm manifest: 
   {

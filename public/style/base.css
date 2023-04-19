@@ -114,6 +114,14 @@ body {
     cursor: pointer;
 }
 
+.hidden {
+    display: none !important;
+}
+
+.vissible {
+    display: flex !important;
+}
+
 @media only screen and (max-width: 576px) {
     .center-element {
         width: 100% !important;

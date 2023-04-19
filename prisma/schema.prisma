@@ -51,7 +51,7 @@ model SmartMedicine {
 model SmartBracelet {
   id              String         @id @default(cuid())
   uniqCode        String         @unique
-  temperature     String
+  temperature     String?
   createdAt       DateTime?      @default(now())
   updatedAt       DateTime?      @updatedAt
   SmartMedicine   SmartMedicine? @relation(fields: [smartMedicineId], references: [id])
@@ -69,12 +69,14 @@ model SmartBox {
 }
 
 model SensorBox {
-  id         String    @id @default(cuid())
+  id         String     @id @default(cuid())
   name       String
-  SmartBox   SmartBox? @relation(fields: [smartBoxId], references: [id])
+  weight     String?
+  reminder   Reminder[]
+  SmartBox   SmartBox?  @relation(fields: [smartBoxId], references: [id])
   smartBoxId String?
-  createdAt  DateTime? @default(now())
-  updatedAt  DateTime? @updatedAt
+  createdAt  DateTime?  @default(now())
+  updatedAt  DateTime?  @updatedAt
 }
 
 model Profil {
@@ -87,7 +89,29 @@ model Profil {
   updatedAt DateTime @updatedAt
 }
 
+model Reminder {
+  id              String         @id @default(cuid())
+  startDate       DateTime?
+  finishDate      DateTime?
+  interval        String?
+  time            String?
+  reminder_before String?
+  reminder_after  String?
+  reminder_type   REMINDER_TYPE?
+  reminder_status Boolean?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  SensorBox       SensorBox?     @relation(fields: [sensorBoxId], references: [id])
+  sensorBoxId     String?
+}
+
 enum TOKEN_TYPE {
   RESET_TOKEN
   VERIFICATION_TOKEN
+}
+
+enum REMINDER_TYPE {
+  X_TIME_DAY
+  EVERY_X_DAY
+  EVERY_X_WEEK
 }

@@ -8,16 +8,49 @@
 
     <label for="frequency" class="d-block mt-5 mb-2">Frequency</label>
     <select name="frequency" id="frequency">
-        <option value="">X Times A day</option>
-        <option value="">Every X days</option>
-        <option value="">Every X weeks</option>
+        <option value="xTimeDay">X Times A day</option>
+        <option value="everyXDay">Every X days</option>
+        <option value="everyXWeek">Every X weeks</option>
     </select>
 
-    <label for="interval" class="mt-4 mb-2">Times</label>
-    <input type="time" class="times-picker py-1 px-2" value="00:00" step="900">
-    <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
-    <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
-    <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
+    {{!-- X TIMES A DAY --}}
+    <div id="x-times-day">
+        <label for="interval" class="mt-4 mb-2">Times</label>
+        <input type="time" class="times-picker py-1 px-2" value="00:00" step="900">
+        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
+        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
+        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
+    </div>
+
+    {{!-- EVERY X WEEKS --}}
+    <div id="every-x-week">
+        <label for="interval" class="mt-4 mb-2">Set Weeks Interval</label>
+        <div class="d-flex align-items-center">
+            <p class="mb-0 me-3 fw-light">Every</p>
+            <div id="week-interval-number-control"
+                class="number-input d-flex align-items-center bg-secondary-color-1 px-2 py-1 rounded-9">
+                <img src="/img/minus.svg" alt="" class="control-icon pointer">
+                <input type="number" min="1" max="99">
+                <img src="/img/plus.svg" alt="" class="control-icon pointer">
+            </div>
+            <p class="mb-0 ms-3 fw-light">Weeks</p>
+        </div>
+    </div>
+
+    {{!-- EVERY X DAYS --}}
+    <div id="every-x-day">
+        <label for="interval" class="mt-4 mb-2">Set Days Interval</label>
+        <div class="d-flex align-items-center">
+            <p class="mb-0 me-3 fw-light">Every</p>
+            <div id="days-interval-number-control"
+                class="number-input d-flex align-items-center bg-secondary-color-1 px-2 py-1 rounded-9">
+                <img src="/img/minus.svg" alt="" class="control-icon pointer">
+                <input type="number" min="1" max="99">
+                <img src="/img/plus.svg" alt="" class="control-icon pointer">
+            </div>
+            <p class="mb-0 ms-3 fw-light">Days</p>
+        </div>
+    </div>
 
     <label for="interval" class="mt-4 mb-2">Remind Me</label>
     <div class="d-flex justify-content-between">
@@ -50,18 +83,50 @@
     </div>
 </form>
 
-<form class="bg-secondary-color-2 p-3 rounded-9 mt-3">
+{{!-- X TIMES A DAY --}}
+<div id="day-schedule">
+    <form  class="bg-secondary-color-2 p-3 rounded-9 mt-3">
+        <h6 class="text-secondary-color-4 fw-bolder">Schedule</h6>
+        <div class="d-flex align-items-center mt-5 mb-2">
+            <label for="startDate" class="input-label">Start Date</label>
+            <input type="date" name="startDate" id="startDate" class="p-1">
+        </div>
+        <div class="d-flex align-items-center mt-5 mb-2">
+            <label for="endDate" class="input-label">End Date</label>
+            <input type="date" name="startDate" id="finishDate" class="p-1">
+        </div>
+    </form>
+</div>
+
+{{!-- EVERY X DAY atau EVERY X WEEKS --}}
+<div id="week-schedule">
+<form  class="bg-secondary-color-2 p-3 rounded-9 mt-3">
     <h6 class="text-secondary-color-4 fw-bolder">Schedule</h6>
     <div class="d-flex align-items-center mt-5 mb-2">
         <label for="startDate" class="input-label">Start Date</label>
         <input type="date" name="startDate" id="startDate" class="p-1">
     </div>
-    <div class="d-flex align-items-center mt-5 mb-2">
-        <label for="endDate" class="input-label">End Date</label>
-        <input type="date" name="startDate" id="endtDate" class="p-1">
+    <div class="d-flex align-items-center mb-2">
+        <label for="setTime" class="input-label">Set Time</label>
+        <input type="time" name="setTime" id="setTime" class="p-1">
     </div>
-</form>
+    <div class="d-flex align-items-center">
+        <label class="input-label">End After</label>
+        <div class="d-flex align-items-center justify-content-between">
+            <div id="reminder-number-control"
+                class="number-input d-flex align-items-center bg-secondary-color-1 px-2 py-1 rounded-9">
+                <img src="/img/minus.svg" alt="" class="control-icon pointer">
+                <input type="number" min="1" max="99">
+                <img src="/img/plus.svg" alt="" class="control-icon pointer">
+            </div>
+            <p class="mb-0">Reminders</p>
+        </div>
+    </div>
 
-<button type="button" class="c-button mt-3 d-block text-secondary-color-1 fw-bold bg-main-color-1">Add
+</form>
+</div>
+
+
+<button type="button" id="btn" class="c-button mt-3 mb-5 d-block text-secondary-color-1 fw-bold bg-main-color-1">Add
     Schedule
 </button>
