@@ -122,6 +122,15 @@ body {
     display: flex !important;
 }
 
+#notif button[type=button] {
+    background-color: var(--main-color-3);
+    border: none;
+    border-radius: 7px;
+    color: var(--secondary-color-1);
+    outline: none;
+    padding: 5px 10px;
+}
+
 @media only screen and (max-width: 576px) {
     .center-element {
         width: 100% !important;

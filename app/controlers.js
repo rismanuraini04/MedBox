@@ -11,7 +11,13 @@ exports.login = (req, res) => {
     res.render("login", data);
 };
 
-module.exports.logout = (req, res) => {
+module.exports.logout = async (req, res) => {
+    // Ketika user logout hapus subscription terhadap push notificiation
+    // Ambil cookie identifier
+    const identifier = req.cookies?.Identifier;
+    // Hapus data di DB berdasarkan identifier
+    console.log(identifier);
+    await prisma.subscription.delete({ where: { identifier } });
     res.cookie("Authorization", "", { maxAge: 1 });
     res.redirect("/login");
 };
@@ -42,23 +48,39 @@ exports.dashboard = async (req, res) => {
     res.render("page4", data);
 };
 
-exports.pageOptions = (req, res) => {
+exports.pageOptions = async (req, res) => {
     const id = req.params.id;
+    const { name } = await prisma.sensorBox.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            name: true,
+        },
+    });
     const data = {
         styles: ["/style/page5.css"],
         scripts: [],
-        title: `Box ${id} options`,
+        title: `${name} Options`,
         id: id,
     };
     res.render("page5", data);
 };
 
-exports.scheduleReminder = (req, res) => {
+exports.scheduleReminder = async (req, res) => {
     const id = req.params.id;
+    const { name } = await prisma.sensorBox.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            name: true,
+        },
+    });
     const data = {
         styles: ["/style/page8.css", "/style/page6.css"],
         scripts: ["/js/page6.js"],
-        title: `Box ${id} Schedule Reminder`,
+        title: `${name} Schedule Reminder`,
     };
     res.render("page6", data);
 };

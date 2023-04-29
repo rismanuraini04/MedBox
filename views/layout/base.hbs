@@ -9,6 +9,7 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/style/base.css">
     <link rel="stylesheet" href="/style/navbar.css">
+    <link rel="shortcut icon" href="/img/medicine.png" type="image/x-icon">
     {{#if styles}}
         {{#each styles}}
             <link rel="stylesheet" href="{{this}}">
@@ -23,6 +24,15 @@
     </nav>
 
     <div class="center-element nav-margin">
+         <div class="bg-secondary-color-2 p-3 rounded-9 mb-5 hidden" id="notif">
+            <h6 class="text-secondary-color-4 fw-bolder">Allow Us To Send Notification</h6>
+            <p>
+            Don't let your medication schedule slip your mind. 
+            Allow us to send notifications to keep you informed and on track with your health goals. 
+            Stay healthy and never miss a dose again..
+            </p>
+            <button type="button" id="notif-button">Allow Notifications</button>
+        </div>
         {{{body}}}
 
         <section class="d-flex justify-content-between align-items-center">
@@ -41,6 +51,8 @@
     integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
 </script>
 <script src="/js/util/httpRequest.js"></script>
+<script src="/js/util/stringConverter.js"></script>
+<script src="/js/util/notification.js"></script>
 {{#if scripts}}
     {{#each scripts}}
         <script src="{{this}}"></script>

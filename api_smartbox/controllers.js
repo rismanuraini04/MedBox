@@ -1,6 +1,8 @@
 const prisma = require("../prisma/client");
 const { resSuccess, resError } = require("../services/responseHandler");
+const webpush = require("web-push");
 const alarm = require("alarm");
+const { getUser } = require("../services/auth");
 exports.generateId = async (req, res) => {
     try {
         const characters =
@@ -99,9 +101,30 @@ exports.setSensorBoxRemider = async (req, res) => {
                     0,
                     0
                 );
-                console.log(schedule);
-                alarm(schedule, function () {
-                    console.log("Notification goes here");
+                console.log(`Schedule set at ${schedule}`);
+                alarm(schedule, async function () {
+                    console.log("Notification Wes Send");
+                    const payload = JSON.stringify({
+                        title: "Medication Reminder",
+                    });
+                    const userID = await getUser(req);
+                    const user = await prisma.user.findUnique({
+                        where: { id: userID },
+                        select: {
+                            subscription: {
+                                select: {
+                                    identifier: true,
+                                    subscriptionToken: true,
+                                },
+                            },
+                        },
+                    });
+                    user.subscription.forEach((subs) => {
+                        const subscription = JSON.parse(subs.subscriptionToken);
+                        webpush
+                            .sendNotification(subscription, payload)
+                            .catch((err) => console.error(`ERR: ${err}`));
+                    });
                 });
             });
         }

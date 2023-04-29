@@ -22,6 +22,7 @@ model User {
   id                String         @id @default(uuid())
   username          String         @unique
   email             String         @unique
+  phone             String?        @unique
   password          String
   passwordUpdatedAt DateTime
   accountIsVerified Boolean        @default(false)
@@ -29,12 +30,33 @@ model User {
   token             String?        @unique
   tokenExpiredAt    DateTime?
   tokenType         TOKEN_TYPE?
+  subscription      Subscription[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   role              Role           @relation(fields: [roleId], references: [id])
   roleId            String
   profil            Profil?
   smartMedicine     SmartMedicine?
+}
+
+model Subscription {
+  id                String   @id @default(uuid())
+  identifier        String   @unique
+  subscriptionToken String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  User              User?    @relation(fields: [userId], references: [id])
+  userId            String?
+}
+
+model Profil {
+  id        String   @id @default(cuid())
+  full_name String?
+  photo     String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SmartMedicine {
@@ -77,16 +99,6 @@ model SensorBox {
   smartBoxId String?
   createdAt  DateTime?  @default(now())
   updatedAt  DateTime?  @updatedAt
-}
-
-model Profil {
-  id        String   @id @default(cuid())
-  full_name String?
-  photo     String?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model Reminder {

@@ -5,8 +5,6 @@ const {
     hashValidator,
     generateAuthorizationToken,
     getUser,
-    generateResetUrl,
-    getResetUrlPayload,
 } = require("../../services/auth");
 const {
     resError,
@@ -14,7 +12,6 @@ const {
     ErrorException,
 } = require("../../services/responseHandler");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
-const { random: stringGenerator } = require("@supercharge/strings");
 const crypto = require("crypto");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
@@ -120,7 +117,7 @@ exports.login = async (req, res) => {
             },
         });
     } catch (err) {
-        console.log(err)
+        console.log(err);
         return resError({
             res,
             title: "Failed to login",
@@ -566,5 +563,111 @@ exports.profileUpdate = async (req, res) => {
     } catch (err) {
         console.log(err);
         return resError({ res, errors: err, title: "Failed update profile" });
+    }
+};
+
+exports.notificationSubscription = async (req, res) => {
+    try {
+        const subscription = req.body;
+        const userID = await getUser(req);
+        const userSubscription = await prisma.user.update({
+            where: {
+                id: userID,
+            },
+            data: {
+                subscription: {
+                    create: {
+                        subscriptionToken: JSON.stringify(subscription),
+                        identifier: req.cookies.Identifier,
+                    },
+                },
+            },
+            select: {
+                username: true,
+                subscription: { select: { subscriptionToken: true } },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success to subscribe",
+            data: userSubscription,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            title: "Failed To Subscribe Notification",
+        });
+    }
+};
+
+exports.notificationStatus = async (req, res) => {
+    try {
+        const userID = await getUser(req);
+        const userSubscription = await prisma.user.findMany({
+            where: {
+                id: userID,
+                subscription: {
+                    some: {
+                        identifier: req.cookies.Identifier,
+                    },
+                },
+            },
+            select: {
+                username: true,
+                subscription: {
+                    select: { subscriptionToken: true, identifier: true },
+                },
+            },
+        });
+
+        if (userSubscription.length < 1) throw "User Not Subscribe Anymore";
+
+        return resSuccess({
+            res,
+            title: "Success get subscribe status",
+            data: userSubscription,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            title: "Failed To Get Notification Status",
+        });
+    }
+};
+
+exports.notificationUnsubscribe = async (req, res) => {
+    try {
+        const userID = await getUser(req);
+        const userSubscription = await prisma.user.update({
+            where: {
+                id: userID,
+            },
+            data: {
+                subscription: {
+                    disconnect: {
+                        identifier: req.cookies.Identifier,
+                    },
+                },
+            },
+            select: {
+                username: true,
+                subscriptionToken: true,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success to Unsubscribe",
+            data: userSubscription,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            errors: err,
+            title: "Failed To Unsubscribe Notification",
+        });
     }
 };

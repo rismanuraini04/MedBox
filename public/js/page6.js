@@ -20,7 +20,6 @@ numberControl("reminder-number-control");
 const xTimeDay = document.getElementById("x-times-day");
 const everyXDay = document.getElementById("every-x-day");
 const everyXWeek = document.getElementById("every-x-week");
-
 const frequency = document.getElementById("frequency");
 const daySchedule = document.getElementById("day-schedule");
 const weekSchedule = document.getElementById("week-schedule");
@@ -57,6 +56,7 @@ frequency.addEventListener("change", (e) => {
     updateFrequency();
 });
 
+//INFO: Handling ketika user memilih X Time A Day
 const button = document.getElementById("btn");
 const xTimeDay_1 = document.querySelectorAll(".times-picker")[0];
 const xTimeDay_2 = document.querySelectorAll(".times-picker")[1];
@@ -64,6 +64,7 @@ const xTimeDay_3 = document.querySelectorAll(".times-picker")[2];
 const xTimeDay_4 = document.querySelectorAll(".times-picker")[3];
 const startDate = document.getElementById("startDate");
 const finishDate = document.getElementById("finishDate");
+
 button.addEventListener("click", (e) => {
     e.preventDefault();
     httpRequest({
@@ -79,7 +80,7 @@ button.addEventListener("click", (e) => {
                 xTimeDay_3.value,
                 xTimeDay_4.value,
             ],
-            reminder_type: "",
+            reminder_type: "X_TIME_DAY",
             reminder_before: "",
             reminder_after: "",
         },

@@ -23,7 +23,7 @@ const fetchData = async () => {
     resp.data.smartBox.sensorBox.forEach((data) => {
         container.insertAdjacentHTML("afterbegin", tempalte(data));
     });
-    console.log(resp);
+
     document.getElementById("temp").textContent =
         resp.data.smartBracelet.temperature;
 };
