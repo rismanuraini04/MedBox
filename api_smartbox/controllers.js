@@ -1,7 +1,6 @@
 const prisma = require("../prisma/client");
 const { resSuccess, resError } = require("../services/responseHandler");
 const webpush = require("web-push");
-const alarm = require("alarm");
 const Scheduler = require("../services/scheduler");
 const { getUser } = require("../services/auth");
 exports.generateId = async (req, res) => {
@@ -144,6 +143,7 @@ exports.setSensorBoxRemider = async (req, res) => {
         // Save Reminder To DB
         const data = await prisma.reminder.create({
             data: {
+                name,
                 startDate: new Date(startDate),
                 finishDate: new Date(startDate),
                 interval,
@@ -175,6 +175,7 @@ exports.getSensorBoxRemider = async (req, res) => {
                 createdAt: "desc",
             },
         });
+
         return resSuccess({
             res,
             title: "Success to get reminder detail",
@@ -182,5 +183,28 @@ exports.getSensorBoxRemider = async (req, res) => {
         });
     } catch (error) {
         return resError({ res, title: "Failed to get reminder detail" });
+    }
+};
+
+exports.deleteSensorBoxRemider = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.reminder.delete({ where: { id } });
+        const taskList = data.reminder_task_id.split(",");
+
+        taskList.forEach((task) => {
+            Scheduler.removeTask(task);
+        });
+        return resSuccess({
+            res,
+            title: "Success to get reminder detail",
+            data: data,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to delete reminder",
+            errors: error,
+        });
     }
 };

@@ -26,6 +26,7 @@ const daySchedule = document.getElementById("day-schedule");
 const weekSchedule = document.getElementById("week-schedule");
 const medicineName = document.getElementById("medicine");
 const sensorBoxID = document.getElementById("box-id").getAttribute("data-id");
+const reminderId = document.getElementById("reminder-id");
 let frequencyType = frequency.value;
 
 // Info: Control Form Appearance
@@ -90,4 +91,23 @@ addButtton.addEventListener("click", (e) => {
             reminder_after: "",
         },
     });
+});
+
+// INFO: Delet Reminder
+const deleteButton = document.getElementById("delete-button");
+deleteButton.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const resp = await httpRequest({
+        url: `/api/v1/smartbox/reminder/${reminderId.getAttribute("data-id")}`,
+        method: "DELETE",
+    });
+
+    if (resp.success) {
+        alert("Success Delete Reminder");
+        location.reload();
+    }
+
+    if (!resp.success) {
+        alert("Failed to Delete Reminder");
+    }
 });

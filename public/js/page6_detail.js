@@ -3,6 +3,7 @@ const modifyContainer = document.getElementById("modify-container");
 const formDetail = (data) => {
     if (data === null) return;
     frequency.value = data.reminder_type;
+    reminderId.setAttribute("data-id", data.id);
 
     xTimeDay.style.display = "none";
     everyXDay.style.display = "none";

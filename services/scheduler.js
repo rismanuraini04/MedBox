@@ -37,6 +37,7 @@ class Scheduler {
             console.log("Task ID Cant Be Find");
             return;
         }
+        console.log(`Task ${id} Remove`);
         clearTimeout(task.timer);
     };
 }
