@@ -103,7 +103,6 @@ exports.setSensorBoxRemider = async (req, res) => {
                 );
                 console.log(`Schedule set at ${schedule}`);
                 alarm(schedule, async function () {
-                    console.log("Notification Wes Send");
                     const payload = JSON.stringify({
                         title: "Medication Reminder",
                     });
@@ -113,17 +112,30 @@ exports.setSensorBoxRemider = async (req, res) => {
                         select: {
                             subscription: {
                                 select: {
+                                    subscriptionExpiredAt: true,
                                     identifier: true,
                                     subscriptionToken: true,
                                 },
                             },
                         },
                     });
-                    user.subscription.forEach((subs) => {
-                        const subscription = JSON.parse(subs.subscriptionToken);
-                        webpush
-                            .sendNotification(subscription, payload)
-                            .catch((err) => console.error(`ERR: ${err}`));
+                    user.subscription.forEach(async (subs) => {
+                        // Hanya user yang masih login yang bisa menerima notifikasi
+                        if (new Date() < new Date(subs.subscriptionExpiredAt)) {
+                            const subscription = JSON.parse(
+                                subs.subscriptionToken
+                            );
+                            console.log("Notification Wes Send");
+                            webpush
+                                .sendNotification(subscription, payload)
+                                .catch((err) => console.error(`ERR: ${err}`));
+                        } else {
+                            // Jika Token Sudah Kadaluarsa maka hapus dari database
+                            console.log("User Subscription Expired");
+                            await prisma.subscription.delete({
+                                where: { identifier: subs.identifier },
+                            });
+                        }
                     });
                 });
             });

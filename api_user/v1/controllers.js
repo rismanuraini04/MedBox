@@ -579,6 +579,9 @@ exports.notificationSubscription = async (req, res) => {
                     create: {
                         subscriptionToken: JSON.stringify(subscription),
                         identifier: req.cookies.Identifier,
+                        subscriptionExpiredAt: new Date(
+                            new Date().setSeconds(Number(process.env.MAX_AGE))
+                        ),
                     },
                 },
             },
@@ -630,7 +633,6 @@ exports.notificationStatus = async (req, res) => {
             data: userSubscription,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             errors: error,

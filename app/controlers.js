@@ -16,8 +16,9 @@ module.exports.logout = async (req, res) => {
     // Ambil cookie identifier
     const identifier = req.cookies?.Identifier;
     // Hapus data di DB berdasarkan identifier
-    console.log(identifier);
-    await prisma.subscription.delete({ where: { identifier } });
+    try {
+        await prisma.subscription.delete({ where: { identifier } });
+    } catch (error) {}
     res.cookie("Authorization", "", { maxAge: 1 });
     res.redirect("/login");
 };
