@@ -103,19 +103,21 @@ model SensorBox {
 }
 
 model Reminder {
-  id              String         @id @default(cuid())
-  startDate       DateTime?
-  finishDate      DateTime?
-  interval        String?
-  time            String?
-  reminder_before String?
-  reminder_after  String?
-  reminder_type   REMINDER_TYPE?
-  reminder_status Boolean?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  SensorBox       SensorBox?     @relation(fields: [sensorBoxId], references: [id])
-  sensorBoxId     String?
+  id               String         @id @default(cuid())
+  name             String?
+  startDate        DateTime?
+  finishDate       DateTime?
+  interval         String?
+  time             String?
+  reminder_task_id String?
+  reminder_before  String?
+  reminder_after   String?
+  reminder_type    REMINDER_TYPE?
+  reminder_status  Boolean?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  SensorBox        SensorBox?     @relation(fields: [sensorBoxId], references: [id])
+  sensorBoxId      String?
 }
 
 enum TOKEN_TYPE {

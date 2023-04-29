@@ -13,6 +13,7 @@ const numberControl = (id) => {
     });
 };
 
+// INFO: Control Form Sliding
 numberControl("week-interval-number-control");
 numberControl("days-interval-number-control");
 numberControl("reminder-number-control");
@@ -23,8 +24,11 @@ const everyXWeek = document.getElementById("every-x-week");
 const frequency = document.getElementById("frequency");
 const daySchedule = document.getElementById("day-schedule");
 const weekSchedule = document.getElementById("week-schedule");
+const medicineName = document.getElementById("medicine");
+const sensorBoxID = document.getElementById("box-id").getAttribute("data-id");
 let frequencyType = frequency.value;
 
+// Info: Control Form Appearance
 const updateFrequency = () => {
     xTimeDay.style.display = "none";
     everyXDay.style.display = "none";
@@ -32,17 +36,17 @@ const updateFrequency = () => {
     daySchedule.style.display = "none";
     weekSchedule.style.display = "none";
 
-    if (frequencyType === "xTimeDay") {
+    if (frequencyType === "X_TIME_DAY") {
         xTimeDay.style.display = "block";
         daySchedule.style.display = "block";
     }
 
-    if (frequencyType === "everyXDay") {
+    if (frequencyType === "EVERY_X_DAY") {
         everyXDay.style.display = "block";
         weekSchedule.style.display = "block";
     }
 
-    if (frequencyType === "everyXWeek") {
+    if (frequencyType === "EVERY_X_WEEK") {
         everyXWeek.style.display = "block";
         weekSchedule.style.display = "block";
     }
@@ -57,7 +61,7 @@ frequency.addEventListener("change", (e) => {
 });
 
 //INFO: Handling ketika user memilih X Time A Day
-const button = document.getElementById("btn");
+const addButtton = document.getElementById("add-btn");
 const xTimeDay_1 = document.querySelectorAll(".times-picker")[0];
 const xTimeDay_2 = document.querySelectorAll(".times-picker")[1];
 const xTimeDay_3 = document.querySelectorAll(".times-picker")[2];
@@ -65,12 +69,13 @@ const xTimeDay_4 = document.querySelectorAll(".times-picker")[3];
 const startDate = document.getElementById("startDate");
 const finishDate = document.getElementById("finishDate");
 
-button.addEventListener("click", (e) => {
+addButtton.addEventListener("click", (e) => {
     e.preventDefault();
     httpRequest({
         url: "/api/v1/smartbox/reminder",
         body: {
-            sensorBoxID: "clfxk22ff0001soggt6q2m5nb",
+            name: medicineName.value,
+            sensorBoxID,
             startDate: startDate.value,
             finishDate: finishDate.value,
             interval: "0",

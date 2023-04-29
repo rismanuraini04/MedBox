@@ -1,3 +1,4 @@
+ <p class="hidden" id="box-id" data-id="{{id}}"></p>
  <form class="bg-secondary-color-2 p-3 rounded-9">
     <label for="medicineName" class="fs-6 fw-bold">Medicine Name</label>
     <input type="text" name="" id="medicine" class="py-1 px-2 mt-3">
@@ -8,9 +9,9 @@
 
     <label for="frequency" class="d-block mt-5 mb-2">Frequency</label>
     <select name="frequency" id="frequency">
-        <option value="xTimeDay">X Times A day</option>
-        <option value="everyXDay">Every X days</option>
-        <option value="everyXWeek">Every X weeks</option>
+        <option value="X_TIME_DAY">X Times A day</option>
+        <option value="EVERY_X_DAY">Every X days</option>
+        <option value="EVERY_X_WEEK">Every X weeks</option>
     </select>
 
     {{!-- X TIMES A DAY --}}
@@ -52,35 +53,6 @@
         </div>
     </div>
 
-    <label for="interval" class="mt-4 mb-2">Remind Me</label>
-    <div class="d-flex justify-content-between">
-        <div class="reminder pe-4">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="before">
-                <label class="form-check-label" for="before">
-                    Before
-                </label>
-            </div>
-            <select name="reminderBefore" id="reminderBefore">
-                <option value="">5 Minutes</option>
-                <option value="">10 Minutes</option>
-                <option value="">15 Minutes</option>
-            </select>
-        </div>
-        <div class="reminder">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="after">
-                <label class="form-check-label" for="after">
-                    After
-                </label>
-            </div>
-            <select name="reminderBefore" id="reminderBefore">
-                <option value="">5 Minutes</option>
-                <option value="">10 Minutes</option>
-                <option value="">15 Minutes</option>
-            </select>
-        </div>
-    </div>
 </form>
 
 {{!-- X TIMES A DAY --}}
@@ -127,6 +99,15 @@
 </div>
 
 
-<button type="button" id="btn" class="c-button mt-3 mb-5 d-block text-secondary-color-1 fw-bold bg-main-color-1">Add
+<button type="button" id="add-btn" class="c-button mt-3 mb-5 d-block text-secondary-color-1 fw-bold bg-main-color-1">Add
     Schedule
 </button>
+
+<div class="d-flex justify-content-between hidden mb-5" id="modify-container">
+    <button type="button" class="c-button mt-3 d-block text-secondary-color-1 fw-bold bg-main-color-1 me-2">
+        Save
+    </button>
+    <button type="button" class="c-button mt-3 d-block text-secondary-color-1 fw-bold bg-danger ms-2">
+        Delete
+    </button>
+</div>

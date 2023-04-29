@@ -80,8 +80,9 @@ exports.scheduleReminder = async (req, res) => {
     });
     const data = {
         styles: ["/style/page8.css", "/style/page6.css"],
-        scripts: ["/js/page6.js"],
+        scripts: ["/js/page6.js", "/js/page6_detail.js"],
         title: `${name} Schedule Reminder`,
+        id,
     };
     res.render("page6", data);
 };
