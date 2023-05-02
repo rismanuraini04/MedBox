@@ -25,8 +25,8 @@ app.engine("hbs", hbs.__express);
 app.set("views", "views");
 app.set("view engine", "hbs");
 app.set("view options", { layout: "layout/base" });
-app.use(express.static("public"));
-app.use("/static", express.static("public"));
+// app.use(express.static("public"));
+// app.use("/static", express.static("public"));
 app.use("/", ROUTER);
 
 app.listen(PORT, () => {

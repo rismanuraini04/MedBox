@@ -87,8 +87,6 @@ addButtton.addEventListener("click", (e) => {
                 xTimeDay_4.value,
             ],
             reminder_type: "X_TIME_DAY",
-            reminder_before: "",
-            reminder_after: "",
         },
     });
 });
@@ -109,5 +107,38 @@ deleteButton.addEventListener("click", async (e) => {
 
     if (!resp.success) {
         alert("Failed to Delete Reminder");
+    }
+});
+
+// INFO: Update Reminder
+const updateButtton = document.getElementById("update-button");
+updateButtton.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const resp = await httpRequest({
+        url: "/api/v1/smartbox/reminder",
+        body: {
+            name: medicineName.value,
+            reminderId: reminderId.getAttribute("data-id"),
+            startDate: startDate.value,
+            finishDate: finishDate.value,
+            interval: "0",
+            times: [
+                xTimeDay_1.value,
+                xTimeDay_2.value,
+                xTimeDay_3.value,
+                xTimeDay_4.value,
+            ],
+            reminder_type: "X_TIME_DAY",
+        },
+        method: "PATCH",
+    });
+
+    if (resp.success) {
+        alert("Success Update Reminder");
+        location.reload();
+    }
+
+    if (!resp.success) {
+        alert("Failed to Update Reminder");
     }
 });
