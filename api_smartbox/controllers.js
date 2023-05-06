@@ -381,7 +381,37 @@ exports.updateSensorBoxRemider = async (req, res) => {
     }
 };
 
-exports.test = async (req, res) => {
-    await req.app.mqttpublish("msg", "Hay");
-    return resSuccess({ res });
+exports.updateMedicineWeight = async (data, payload) => {
+    try {
+        const body = JSON.parse(data);
+
+        const smartBox = await prisma.smartBox.findFirstOrThrow({
+            where: {
+                uniqCode: body.id,
+            },
+            select: {
+                id: true,
+                sensorBox: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        const sensorBox = smartBox.sensorBox.forEach(async (box, no) => {
+            await prisma.sensorBox.update({
+                where: {
+                    id: box.id,
+                },
+                data: {
+                    weight: body[`box${no + 1}`],
+                },
+            });
+        });
+        console.log(`Success update smart medicine ${body.id} weight`);
+    } catch (error) {
+        console.log(error);
+    }
 };

@@ -33,3 +33,20 @@ exports.generateId = async (req, res) => {
         return res.status(500).json({ error });
     }
 };
+
+exports.updateTemprature = async (data, feedback) => {
+    const body = JSON.parse(data);
+    try {
+        await prisma.smartBracelet.update({
+            where: {
+                uniqCode: body.id,
+            },
+            data: {
+                temperature: body.temp,
+            },
+        });
+        console.log("Success Update Temprature");
+    } catch (error) {
+        console.log(error);
+    }
+};

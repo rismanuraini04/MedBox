@@ -74,12 +74,25 @@ class MqttServer {
             });
 
             this.client.on("message", function (topic, message) {
+                this.dynamictopic = false;
+                if (String(route).includes("+")) {
+                    this.dynamictopic = true;
+                }
+                if (this.dynamictopic) {
+                    route.split("+").forEach((d) => {
+                        if (d.length > 1) {
+                            if (topic.includes(d)) {
+                                fn(message.toString(), response);
+                            }
+                        }
+                    });
+                }
                 if (topic === route) {
                     fn(message.toString(), response);
                 }
             });
         } catch (error) {
-            console.log(error);
+            console.log("ERR", error);
             return {
                 susccess: false,
                 message: error,
@@ -105,8 +118,33 @@ class MqttServer {
             console.log(error);
         }
     }
+
+    static async use(fn) {
+        fn._wrapper.forEach((element) => {
+            // console.log(element[1]("aa", "bb"));
+            MqttServer.topiclistener(element[0], (d, f) => {
+                element[1](d, f);
+            });
+        });
+    }
 }
 
-class MqttTopic {}
+class MqttTopic {
+    constructor() {
+        this._listener = [];
+        this._wrapper = [];
+    }
 
-module.exports = { MqttServer };
+    use(listener, fn) {
+        fn._listener.forEach((d) => {
+            const finalTopic = listener + d[0];
+            this._wrapper.push([finalTopic, d[1]]);
+        });
+    }
+    listener(topic, fn) {
+        this._listener.push([topic, fn]);
+        return "[topic, fn]";
+    }
+}
+
+module.exports = { MqttServer, MqttTopic };
