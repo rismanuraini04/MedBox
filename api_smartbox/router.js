@@ -7,5 +7,6 @@ router.post("/reminder", controllers.setSensorBoxRemider);
 router.patch("/reminder", controllers.updateSensorBoxRemider);
 router.get("/reminder/:id", controllers.getSensorBoxRemider);
 router.delete("/reminder/:id", controllers.deleteSensorBoxRemider);
+router.get("/tes", controllers.test);
 
 module.exports = router;

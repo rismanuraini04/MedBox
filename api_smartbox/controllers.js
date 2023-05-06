@@ -101,6 +101,27 @@ exports.setSensorBoxRemider = async (req, res) => {
                     const taskId = Scheduler.setTask(
                         schedule,
                         async function () {
+                            const sensorBox = await prisma.sensorBox.findUnique(
+                                {
+                                    where: {
+                                        id: sensorBoxID,
+                                    },
+                                    select: {
+                                        SmartBox: {
+                                            select: {
+                                                uniqCode: true,
+                                            },
+                                        },
+                                    },
+                                }
+                            );
+                            await req.app.mqttpublish(
+                                `reminder-${sensorBox.SmartBox.uniqCode}`,
+                                "[MQTT]: Jangan Lupa Minum Obat"
+                            ); // publish data for mqtt
+                            console.log(
+                                `Mqtt for reminder-${sensorBox.SmartBox.uniqCode}`
+                            );
                             const payload = JSON.stringify({
                                 title: "Medication Reminder",
                             });
@@ -358,4 +379,9 @@ exports.updateSensorBoxRemider = async (req, res) => {
         console.log(error);
         return resError({ res });
     }
+};
+
+exports.test = async (req, res) => {
+    await req.app.mqttpublish("msg", "Hay");
+    return resSuccess({ res });
 };
