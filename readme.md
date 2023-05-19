@@ -45,7 +45,7 @@ Gunakan topic di atas jika ingin memperbaharui data berat obat. Ganti `+` dengan
 Contoh pengiriman data pada topin update temprature seperti berikut:
 
 ```json
-//topic /smartbox/update/weight/GsEgt
+//topic /smartbox/update/weight/A9Cac
 //payload
 {
     "id": "A9Cac",

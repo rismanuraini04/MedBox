@@ -27,7 +27,9 @@ const weekSchedule = document.getElementById("week-schedule");
 const medicineName = document.getElementById("medicine");
 const sensorBoxID = document.getElementById("box-id").getAttribute("data-id");
 const reminderId = document.getElementById("reminder-id");
+const scheduleBtn = document.getElementById("schedule-btn");
 let frequencyType = frequency.value;
+let scheduleCount = 0;
 
 // Info: Control Form Appearance
 const updateFrequency = () => {
@@ -63,6 +65,8 @@ frequency.addEventListener("change", (e) => {
 
 //INFO: Handling ketika user memilih X Time A Day
 const addButtton = document.getElementById("add-btn");
+const xTimeDayArray = document.querySelectorAll(".times-picker");
+const xTimeDayVisibility = [true];
 const xTimeDay_1 = document.querySelectorAll(".times-picker")[0];
 const xTimeDay_2 = document.querySelectorAll(".times-picker")[1];
 const xTimeDay_3 = document.querySelectorAll(".times-picker")[2];
@@ -70,8 +74,47 @@ const xTimeDay_4 = document.querySelectorAll(".times-picker")[3];
 const startDate = document.getElementById("startDate");
 const finishDate = document.getElementById("finishDate");
 
+document.querySelectorAll(".times-picker").forEach((element, i) => {
+    if (i > 0) {
+        element.parentElement.childNodes[3].addEventListener("click", (e) => {
+            element.parentElement.classList.add("hidden");
+            xTimeDayArray[scheduleCount].setAttribute("data-select", "false");
+            scheduleCount -= 1;
+            if (scheduleCount > 0) {
+                xTimeDayArray[
+                    scheduleCount
+                ].parentElement.childNodes[3].classList.remove("hidden");
+            }
+        });
+    }
+});
+
+scheduleBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (scheduleCount < 3) {
+        scheduleCount += 1;
+        if (scheduleCount > 0) {
+            xTimeDayArray[
+                scheduleCount - 1
+            ].parentElement.childNodes[3].classList.add("hidden");
+        }
+        xTimeDayArray[scheduleCount].parentElement.classList.remove("hidden");
+        xTimeDayArray[
+            scheduleCount
+        ].parentElement.childNodes[3].classList.remove("hidden");
+        xTimeDayArray[scheduleCount].setAttribute("data-select", "true");
+    }
+});
+
 addButtton.addEventListener("click", (e) => {
     e.preventDefault();
+    const times = [];
+    xTimeDayArray.forEach((d) => {
+        if (d.getAttribute("data-select") === "true") {
+            times.push(d.value);
+        }
+    });
+
     httpRequest({
         url: "/api/v1/smartbox/reminder",
         body: {
@@ -80,18 +123,13 @@ addButtton.addEventListener("click", (e) => {
             startDate: startDate.value,
             finishDate: finishDate.value,
             interval: "0",
-            times: [
-                xTimeDay_1.value,
-                xTimeDay_2.value,
-                xTimeDay_3.value,
-                xTimeDay_4.value,
-            ],
+            times,
             reminder_type: "X_TIME_DAY",
         },
     });
 });
 
-// INFO: Delet Reminder
+// INFO: Delete Reminder
 const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -114,6 +152,12 @@ deleteButton.addEventListener("click", async (e) => {
 const updateButtton = document.getElementById("update-button");
 updateButtton.addEventListener("click", async (e) => {
     e.preventDefault();
+    const times = [];
+    xTimeDayArray.forEach((d) => {
+        if (d.getAttribute("data-select") === "true") {
+            times.push(d.value);
+        }
+    });
     const resp = await httpRequest({
         url: "/api/v1/smartbox/reminder",
         body: {
@@ -122,12 +166,7 @@ updateButtton.addEventListener("click", async (e) => {
             startDate: startDate.value,
             finishDate: finishDate.value,
             interval: "0",
-            times: [
-                xTimeDay_1.value,
-                xTimeDay_2.value,
-                xTimeDay_3.value,
-                xTimeDay_4.value,
-            ],
+            times,
             reminder_type: "X_TIME_DAY",
         },
         method: "PATCH",

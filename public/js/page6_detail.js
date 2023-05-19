@@ -16,14 +16,22 @@ const formDetail = (data) => {
         daySchedule.style.display = "block";
 
         // Set Another Value
+        medicineName.value = data.name;
         startDate.value = data.startDate.split("T")[0];
         finishDate.value = data.finishDate.split("T")[0];
+        // console.log(data.time);
         const times = data.time.split(",");
-        xTimeDay_1.value = times[0].split(" ")[4];
-        xTimeDay_2.value = times[1].split(" ")[4];
-        xTimeDay_3.value = times[2].split(" ")[4];
-        xTimeDay_4.value = times[3].split(" ")[4];
-        medicineName.value = data.name;
+        scheduleCount = times.length - 1;
+        times.forEach((time, i) => {
+            xTimeDayArray[i].value = time.split(" ")[4];
+            xTimeDayArray[i].setAttribute("data-select", "true");
+            xTimeDayArray[i].parentElement.classList.remove("hidden");
+            if (i == times.length - 1) {
+                xTimeDayArray[i].parentElement.childNodes[3].classList.remove(
+                    "hidden"
+                );
+            }
+        });
 
         modifyContainer.classList.remove("hidden");
         addButtton.classList.add("hidden");

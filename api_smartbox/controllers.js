@@ -3,6 +3,7 @@ const { resSuccess, resError } = require("../services/responseHandler");
 const webpush = require("web-push");
 const Scheduler = require("../services/scheduler");
 const { getUser } = require("../services/auth");
+
 exports.generateId = async (req, res) => {
     try {
         const characters =
@@ -120,7 +121,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                                 "[MQTT]: Jangan Lupa Minum Obat"
                             ); // publish data for mqtt
                             console.log(
-                                `Mqtt for reminder-${sensorBox.SmartBox.uniqCode}`
+                                `Mqtt set reminder-${sensorBox.SmartBox.uniqCode}`
                             );
                             const payload = JSON.stringify({
                                 title: "Medication Reminder",
@@ -267,6 +268,21 @@ exports.updateSensorBoxRemider = async (req, res) => {
         });
         const oldtaskList = oldData.reminder_task_id.split(",");
 
+        const reminder = await prisma.reminder.findUnique({
+            where: { id: reminderId },
+            select: {
+                SensorBox: {
+                    select: {
+                        SmartBox: {
+                            select: {
+                                uniqCode: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
         oldtaskList.forEach((task) => {
             Scheduler.removeTask(task);
         });
@@ -280,6 +296,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
                 day.setDate(day.getDate() + 1)
             ) {
                 // Lopping semua data yang diberikan (terdapat 4 data nantinya)
+
                 times.forEach(async (time, i) => {
                     const schedule = new Date(
                         day.getFullYear(),
@@ -294,6 +311,13 @@ exports.updateSensorBoxRemider = async (req, res) => {
                     const taskId = Scheduler.setTask(
                         schedule,
                         async function () {
+                            await req.app.mqttpublish(
+                                `reminder-${reminder.SensorBox.SmartBox.uniqCode}`,
+                                "[MQTT]: Jangan Lupa Minum Obat"
+                            ); // publish data for mqtt
+                            console.log(
+                                `Mqtt set reminder-${reminder.SensorBox.SmartBox.uniqCode}`
+                            );
                             const payload = JSON.stringify({
                                 title: "Medication Reminder",
                             });
@@ -411,6 +435,87 @@ exports.updateMedicineWeight = async (data, payload) => {
             });
         });
         console.log(`Success update smart medicine ${body.id} weight`);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+exports.updateMedicineHistory = async (data, payload) => {
+    try {
+        const body = JSON.parse(data);
+        const userTakeMedicineOn = new Date().valueOf();
+        console.log("NOW", userTakeMedicineOn);
+
+        // mengambil reminder paling terakhir yang dibuat
+        const smartBox = await prisma.smartBox.findFirstOrThrow({
+            where: {
+                uniqCode: body.id,
+            },
+            select: {
+                id: true,
+                sensorBox: {
+                    where: {
+                        name: body.userTakeMedicineFrom,
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        reminder: {
+                            select: {
+                                time: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        const lastReminder = smartBox.sensorBox[0].reminder.at(-1);
+
+        // Lakukan Looping Setiap Schedulnya
+        lastReminder.time.split(",").forEach((time) => {
+            const timeLimit = new Date(time); //15
+            const before15Minutes = new Date(
+                timeLimit.getTime() - 15 * 60000
+            ).valueOf(); //00
+            const after15Minutes = new Date(
+                timeLimit.getTime() + 15 * 60000
+            ).valueOf(); //20
+            const after60Minutes = new Date(
+                timeLimit.getTime() + 60 * 60000
+            ).valueOf();
+            // console.log("DB TIME", timeLimit);
+            // console.log("DB TIME AFTER 15", after15Minutes);
+            let timeMatch = false;
+            // console.log(timeNow, before15Minutes, after15Minutes);
+            // Lakukan Pengecekan Apakah Ketika User Mengambil Obat Masih Dalam Jangkauan waktu Yang Ditentukan
+            // TEPAT WAKTU JIKA: Obat diambil 15 menit sebelum atau 15 menit sesudah jadwal
+            console.log(
+                before15Minutes,
+                userTakeMedicineOn,
+                after15Minutes,
+                after60Minutes
+            );
+            if (
+                before15Minutes < userTakeMedicineOn &&
+                userTakeMedicineOn < after15Minutes
+            ) {
+                console.log("TEPAT WAKTU", userTakeMedicineOn);
+                timeMatch = true;
+            }
+            // TERLAMBAT JIKA: Obat diambil lebih dari 15 menit hingga satu jam setelah jadwal
+            if (
+                userTakeMedicineOn > after15Minutes &&
+                userTakeMedicineOn < after60Minutes
+            ) {
+                console.log("TERLAMBAT", userTakeMedicineOn);
+                timeMatch = true;
+            }
+
+            // SELAIN DUA KRITERIA TERSEBUT DATA TIDAK AKAN DICATAT
+            if (!timeMatch) {
+                console.log("NOT TIME MATCH");
+            }
+        });
     } catch (error) {
         console.log(error);
     }
