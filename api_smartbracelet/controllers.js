@@ -2,6 +2,8 @@ const prisma = require("../prisma/client");
 const webpush = require("web-push");
 const TEMPRATURE_RULE_1 = 38; //Jika lebih dari 38 beri reminder untuk minum obat
 const TEMPRATURE_RULE_2 = 41; //Jika lebih dari 41 beri notifikasi untuk pergi ke dokter
+const HISTORY_INTERVAL = 10;
+
 exports.generateId = async (req, res) => {
     try {
         const characters =
@@ -61,6 +63,56 @@ exports.updateTemprature = async (data, feedback) => {
             },
         });
 
+        // INFO: Temp History
+        const lastTempHistory = await prisma.bodyTemperatureHistory.findFirst({
+            where: {
+                SmartBracelet: {
+                    is: {
+                        uniqCode: body.id,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        // Jika Belum Ada Data Yang tersimpan di history, maka simpan
+        if (lastTempHistory === null) {
+            console.log("History empty, Saving First Data");
+            await prisma.bodyTemperatureHistory.create({
+                data: {
+                    temperature: body.temp,
+                    SmartBracelet: {
+                        connect: {
+                            uniqCode: body.id,
+                        },
+                    },
+                },
+            });
+        }
+
+        if (lastTempHistory !== null) {
+            const timeDiffInMinutes =
+                (Date.now() - lastTempHistory.createdAt) / 1000 / 60;
+            console.log(timeDiffInMinutes);
+
+            // Save New DB
+            if (timeDiffInMinutes > HISTORY_INTERVAL) {
+                await prisma.bodyTemperatureHistory.create({
+                    data: {
+                        temperature: body.temp,
+                        SmartBracelet: {
+                            connect: {
+                                uniqCode: body.id,
+                            },
+                        },
+                    },
+                });
+            }
+        }
+
+        // INFO: Notification
         let notificiationData = {};
         let showNotif = false;
         const userId = bracelet.SmartMedicine.User.id;

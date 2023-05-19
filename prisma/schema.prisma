@@ -72,13 +72,23 @@ model SmartMedicine {
 }
 
 model SmartBracelet {
+  id                 String                   @id @default(cuid())
+  uniqCode           String                   @unique
+  temperature        String?
+  temperatureHistory BodyTemperatureHistory[]
+  createdAt          DateTime?                @default(now())
+  updatedAt          DateTime?                @updatedAt
+  SmartMedicine      SmartMedicine?           @relation(fields: [smartMedicineId], references: [id])
+  smartMedicineId    String?                  @unique
+}
+
+model BodyTemperatureHistory {
   id              String         @id @default(cuid())
-  uniqCode        String         @unique
   temperature     String?
   createdAt       DateTime?      @default(now())
   updatedAt       DateTime?      @updatedAt
-  SmartMedicine   SmartMedicine? @relation(fields: [smartMedicineId], references: [id])
-  smartMedicineId String?        @unique
+  SmartBracelet   SmartBracelet? @relation(fields: [smartBraceletId], references: [id])
+  smartBraceletId String?
 }
 
 model SmartBox {
