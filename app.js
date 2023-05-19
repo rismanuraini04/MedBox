@@ -7,9 +7,16 @@ const { MqttServer } = require("./mqttserver");
 const webpush = require("web-push");
 const app = express();
 const ROUTER = require("./router");
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 
 MqttServer.createConnection();
+MqttServer.setSocket(io);
 MqttServer.use(ROUTER.mqttTopic);
+
+io.on("connection", (socket) => {
+    console.log("A client connected 🚀");
+});
 
 const PORT = process.env.PORT || 8080;
 const PUBLIC_VAPI_KEY = process.env.PUBLIC_VAPI_KEY;
@@ -34,6 +41,6 @@ app.use(express.static("public"));
 app.use("/static", express.static("public"));
 app.use("/", ROUTER.router);
 
-app.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log(`🚀 SERVER RUNNING IN PORT ${PORT}`);
 });

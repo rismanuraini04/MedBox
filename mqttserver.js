@@ -3,6 +3,7 @@ const mqtt = require("mqtt");
 class MqttServer {
     static client;
     static clientConnect;
+    static socket;
 
     constructor() {
         console.log("Starting MQTT Connection");
@@ -67,6 +68,7 @@ class MqttServer {
                         }
                     );
                 },
+                socket: MqttServer.socket,
             };
 
             this.client.subscribe(route, () => {
@@ -117,6 +119,10 @@ class MqttServer {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    static setSocket(socket) {
+        MqttServer.socket = socket;
     }
 
     static async use(fn) {

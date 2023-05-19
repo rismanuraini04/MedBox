@@ -42,9 +42,33 @@ exports.linkDevice = (req, res) => {
 };
 
 exports.dashboard = async (req, res) => {
+    const userId = await getUser(req);
+    const smartMedicine = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            smartMedicine: {
+                select: {
+                    id: true,
+                    smartBox: {
+                        select: {
+                            uniqCode: true,
+                        },
+                    },
+                    smartBracelet: {
+                        select: {
+                            uniqCode: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
     const data = {
         styles: ["/style/page4.css"],
         scripts: ["/js/page4.js"],
+        smartBracelet: smartMedicine.smartMedicine.smartBracelet.uniqCode,
     };
     res.render("page4", data);
 };
