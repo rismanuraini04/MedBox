@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const hbs = require("hbs");
 const { MqttServer } = require("./mqttserver");
+const nodeCron = require("./cron/cronWrapper");
 const webpush = require("web-push");
 const app = express();
 const ROUTER = require("./router");
@@ -17,6 +18,8 @@ MqttServer.use(ROUTER.mqttTopic);
 io.on("connection", (socket) => {
     console.log("A client connected 🚀");
 });
+
+nodeCron;
 
 const PORT = process.env.PORT || 8080;
 const PUBLIC_VAPI_KEY = process.env.PUBLIC_VAPI_KEY;
