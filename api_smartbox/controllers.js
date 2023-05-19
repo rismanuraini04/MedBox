@@ -2,6 +2,8 @@ const prisma = require("../prisma/client");
 const { resSuccess, resError } = require("../services/responseHandler");
 const webpush = require("web-push");
 const Scheduler = require("../services/scheduler");
+const ITEM_LIMIT = 20;
+const WEIGHT_LIMIT = 8;
 const { getUser } = require("../services/auth");
 
 exports.generateId = async (req, res) => {
@@ -125,6 +127,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                             );
                             const payload = JSON.stringify({
                                 title: "Medication Reminder",
+                                body: "Don't forget to take your medication on time. Stay on top of your health and wellness by following your prescribed regimen.",
                             });
                             const user = await prisma.user.findUnique({
                                 where: { id: userID },
@@ -165,7 +168,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                     );
                     // Jika Tanggal Terakhir dan waktu terakhir, update status reminder menjadi false
                     if (
-                        i === 3 &&
+                        i === times.length - 1 &&
                         String(day) == String(new Date(finishDate))
                     ) {
                         const taskId = Scheduler.setTask(schedule, async () => {
@@ -361,7 +364,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
                     );
                     // Jika Tanggal Terakhir dan waktu terakhir, update status reminder menjadi false
                     if (
-                        i === 3 &&
+                        i === times.length - 1 &&
                         String(day) == String(new Date(finishDate))
                     ) {
                         const taskId = Scheduler.setTask(schedule, async () => {
@@ -405,6 +408,53 @@ exports.updateSensorBoxRemider = async (req, res) => {
     }
 };
 
+exports.medicineHistory = async (req, res) => {
+    try {
+        const { cursor, sensorBoxId } = req.query;
+        let history;
+
+        if (!cursor) {
+            history = await prisma.medicineHistory.findMany({
+                where: {
+                    SensorBox: {
+                        id: sensorBoxId,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: ITEM_LIMIT,
+            });
+        }
+
+        if (cursor) {
+            history = await prisma.medicineHistory.findMany({
+                where: {
+                    SensorBox: {
+                        id: sensorBoxId,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+            });
+        }
+
+        return resSuccess({
+            res,
+            title: "Success get history list",
+            data: history,
+        });
+    } catch (error) {
+        return resError({ res, title: "Failed to get medicine history" });
+    }
+};
+
 exports.updateMedicineWeight = async (data, payload) => {
     try {
         const body = JSON.parse(data);
@@ -419,18 +469,66 @@ exports.updateMedicineWeight = async (data, payload) => {
                     select: {
                         id: true,
                         name: true,
+                        SmartBox: {
+                            select: {
+                                SmartMedicine: {
+                                    select: {
+                                        userId: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
         });
 
+        // Give User Notification If Weight less then the limit
+        if (body["Box 1"] < WEIGHT_LIMIT || body["Box 2"] < WEIGHT_LIMIT) {
+            const userId = smartBox.sensorBox[0].SmartBox.SmartMedicine.userId;
+            const payload = JSON.stringify({
+                title: "Low Medicene Stock",
+                body: "Low on medicine? Time to refill! Your stock is running low, don't forget to restock soon.",
+            });
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: {
+                    subscription: {
+                        select: {
+                            subscriptionExpiredAt: true,
+                            identifier: true,
+                            subscriptionToken: true,
+                        },
+                    },
+                },
+            });
+
+            user.subscription.forEach(async (subs) => {
+                // Hanya user yang masih login yang bisa menerima notifikasi
+                if (new Date() < new Date(subs.subscriptionExpiredAt)) {
+                    const subscription = JSON.parse(subs.subscriptionToken);
+                    console.log("Notification Wes Send");
+                    webpush
+                        .sendNotification(subscription, payload)
+                        .catch((err) => console.error(`ERR: ${err}`));
+                } else {
+                    // Jika Token Sudah Kadaluarsa maka hapus dari database
+                    console.log("User Subscription Expired");
+                    await prisma.subscription.delete({
+                        where: { identifier: subs.identifier },
+                    });
+                }
+            });
+        }
+
+        // Update Sensor Box Data
         const sensorBox = smartBox.sensorBox.forEach(async (box, no) => {
             await prisma.sensorBox.update({
                 where: {
                     id: box.id,
                 },
                 data: {
-                    weight: body[`box${no + 1}`],
+                    weight: body[`Box ${no + 1}`],
                 },
             });
         });
@@ -447,7 +545,7 @@ exports.updateMedicineHistory = async (data, payload) => {
         console.log("NOW", userTakeMedicineOn);
 
         // mengambil reminder paling terakhir yang dibuat
-        const smartBox = await prisma.smartBox.findFirstOrThrow({
+        const smartBox = await prisma.smartBox.findFirst({
             where: {
                 uniqCode: body.id,
             },
@@ -455,66 +553,116 @@ exports.updateMedicineHistory = async (data, payload) => {
                 id: true,
                 sensorBox: {
                     where: {
-                        name: body.userTakeMedicineFrom,
+                        name: body.box,
                     },
                     select: {
                         id: true,
                         name: true,
                         reminder: {
+                            where: {
+                                reminder_status: true,
+                            },
+                            orderBy: {
+                                createdAt: "desc",
+                            },
                             select: {
+                                id: true,
                                 time: true,
+                                name: true,
                             },
                         },
                     },
                 },
             },
         });
-        const lastReminder = smartBox.sensorBox[0].reminder.at(-1);
-
+        if (smartBox == null) {
+            console.log("Cant Find Active Reminder");
+            return;
+        }
+        const lastReminder = smartBox.sensorBox[0].reminder.at(0);
         // Lakukan Looping Setiap Schedulnya
-        lastReminder.time.split(",").forEach((time) => {
+        const reminderArray = lastReminder.time.split(",");
+        // let i = 1;
+        reminderArray.forEach(async (time, i) => {
+            i += 1;
+            console.log(`----------------${i}----------------`);
             const timeLimit = new Date(time); //15
-            const before15Minutes = new Date(
-                timeLimit.getTime() - 15 * 60000
-            ).valueOf(); //00
-            const after15Minutes = new Date(
-                timeLimit.getTime() + 15 * 60000
-            ).valueOf(); //20
-            const after60Minutes = new Date(
-                timeLimit.getTime() + 60 * 60000
-            ).valueOf();
-            // console.log("DB TIME", timeLimit);
-            // console.log("DB TIME AFTER 15", after15Minutes);
+            const nextTimeLimit = new Date(reminderArray[i + 1]);
+            const before1Minutes = new Date(
+                timeLimit.getTime() - 1 * 60000
+            ).valueOf(); //60
+            const after120Minutes = new Date(
+                timeLimit.getTime() + 120 * 60000
+            ).valueOf(); //120
+            const after150Minutes = new Date(
+                timeLimit.getTime() + 150 * 60000
+            ).valueOf(); //120
+            const before1MinutesOfNextTimeLimit = new Date(
+                nextTimeLimit.getTime() - 1 * 60000
+            ).valueOf(); //120
             let timeMatch = false;
-            // console.log(timeNow, before15Minutes, after15Minutes);
+
             // Lakukan Pengecekan Apakah Ketika User Mengambil Obat Masih Dalam Jangkauan waktu Yang Ditentukan
-            // TEPAT WAKTU JIKA: Obat diambil 15 menit sebelum atau 15 menit sesudah jadwal
-            console.log(
-                before15Minutes,
-                userTakeMedicineOn,
-                after15Minutes,
-                after60Minutes
-            );
+            // TEPAT WAKTU JIKA: Obat diambil 60 menit sebelum atau 120 menit sesudah jadwal
+            // console.log(before60Minutes, userTakeMedicineOn, after120Minutes);
+            // console.log(userTakeMedicineOn, after120Minutes, timeLimit);
             if (
-                before15Minutes < userTakeMedicineOn &&
-                userTakeMedicineOn < after15Minutes
+                userTakeMedicineOn >= before1Minutes &&
+                userTakeMedicineOn < after120Minutes
             ) {
-                console.log("TEPAT WAKTU", userTakeMedicineOn);
+                console.log(`JADWAL ${i}: TEPAT WAKTU`);
                 timeMatch = true;
+                await prisma.medicineHistory.create({
+                    data: {
+                        schedule: `SCHEDULE ${i}@${lastReminder.name}`,
+                        status: "ONTIME",
+                        SensorBox: {
+                            connect: {
+                                id: smartBox.sensorBox[0].id,
+                            },
+                        },
+                    },
+                });
             }
-            // TERLAMBAT JIKA: Obat diambil lebih dari 15 menit hingga satu jam setelah jadwal
+
+            // TERLAMBAT JIKA: Obat diambil lebih dari 120 menit setelah jadwal
             if (
-                userTakeMedicineOn > after15Minutes &&
-                userTakeMedicineOn < after60Minutes
+                userTakeMedicineOn >= after120Minutes &&
+                userTakeMedicineOn < before1MinutesOfNextTimeLimit
             ) {
-                console.log("TERLAMBAT", userTakeMedicineOn);
+                console.log(`JADWAL ${i}: TERLAMBAT`);
                 timeMatch = true;
+                await prisma.medicineHistory.create({
+                    data: {
+                        schedule: `SCHEDULE ${i}@${lastReminder.name}`,
+                        status: "LATE",
+                        SensorBox: {
+                            connect: {
+                                id: smartBox.sensorBox[0].id,
+                            },
+                        },
+                    },
+                });
+
+                // Lakukan Pengecekan Apakah User Sebelumnya Sudah Melakukan Pengambilan Obat
+                // const prevReminder = await prisma.medicineHistory.findMany({
+                //     where: {
+                //         sensorBoxId: smartBox.sensorBox[0].id,
+                //     },
+                // });
+                // console.log(prevReminder);
+                // Ambil data terakhir yang tersimpan di database
+
+                // Jika Belum Melakukan Pengambilan Maka User Dihitung Terlambat
+
+                // Jika Sudah, Maka Tidak ada aksi lanjutan
             }
 
             // SELAIN DUA KRITERIA TERSEBUT DATA TIDAK AKAN DICATAT
             if (!timeMatch) {
-                console.log("NOT TIME MATCH");
+                console.log(`JADWAL ${i}: TIDAK MASUK KATEGORI WAKTU`);
             }
+            // i = i + 1;
         });
     } catch (error) {
         console.log(error);

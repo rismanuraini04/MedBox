@@ -6,6 +6,7 @@ const mqttTopic = new MqttTopic();
 router.post("/generateid", controllers.generateId);
 router.post("/reminder", controllers.setSensorBoxRemider);
 router.patch("/reminder", controllers.updateSensorBoxRemider);
+router.get("/reminder/history", controllers.medicineHistory);
 router.get("/reminder/:id", controllers.getSensorBoxRemider);
 router.delete("/reminder/:id", controllers.deleteSensorBoxRemider);
 

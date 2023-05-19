@@ -37,8 +37,8 @@ Gunakan topic di atas jika ingin memperbaharui data berat obat. Ganti `+` dengan
 ```json
 {
     "id": "kode unik perangkat smart bracelet",
-    "box1": "str number",
-    "box2": "str number"
+    "Box 1": "str number",
+    "Box 2": "str number"
 }
 ```
 
@@ -49,7 +49,16 @@ Contoh pengiriman data pada topin update temprature seperti berikut:
 //payload
 {
     "id": "A9Cac",
-    "box1": "11",
-    "box2": "8"
+    "Box 1": "11",
+    "Box 2": "8"
+}
+```
+
+```json
+//topic /smartbox/update/history/A9Cac
+//payload
+{
+    "id": "A9Cac",
+    "box": "Box 2"
 }
 ```

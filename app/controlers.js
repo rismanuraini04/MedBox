@@ -96,12 +96,21 @@ exports.profile = (req, res) => {
     res.render("page2", data);
 };
 
-exports.history = (req, res) => {
+exports.history = async (req, res) => {
     const id = req.params.id;
+    const { name } = await prisma.sensorBox.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            name: true,
+        },
+    });
+
     const data = {
         styles: ["/style/page12.css"],
-        scripts: [],
-        title: `Box ${id} History`,
+        scripts: ["/js/page12.js"],
+        title: `${name} History`,
     };
     res.render("page12", data);
 };
