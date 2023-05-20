@@ -30,10 +30,10 @@ exports.generateId = async (req, res) => {
                 sensorBox: {
                     create: [
                         {
-                            name: "sensor 1",
+                            name: "Box 1",
                         },
                         {
-                            name: "sensor 2",
+                            name: "Box 2",
                         },
                     ],
                 },
