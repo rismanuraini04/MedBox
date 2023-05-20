@@ -42,9 +42,33 @@ exports.linkDevice = (req, res) => {
 };
 
 exports.dashboard = async (req, res) => {
+    const userId = await getUser(req);
+    const smartMedicine = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+        select: {
+            smartMedicine: {
+                select: {
+                    id: true,
+                    smartBox: {
+                        select: {
+                            uniqCode: true,
+                        },
+                    },
+                    smartBracelet: {
+                        select: {
+                            uniqCode: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
     const data = {
         styles: ["/style/page4.css"],
         scripts: ["/js/page4.js"],
+        smartBracelet: smartMedicine.smartMedicine.smartBracelet.uniqCode,
     };
     res.render("page4", data);
 };
@@ -96,12 +120,21 @@ exports.profile = (req, res) => {
     res.render("page2", data);
 };
 
-exports.history = (req, res) => {
+exports.history = async (req, res) => {
     const id = req.params.id;
+    const { name } = await prisma.sensorBox.findUnique({
+        where: {
+            id,
+        },
+        select: {
+            name: true,
+        },
+    });
+
     const data = {
         styles: ["/style/page12.css"],
-        scripts: [],
-        title: `Box ${id} History`,
+        scripts: ["/js/page12.js"],
+        title: `${name} History`,
     };
     res.render("page12", data);
 };

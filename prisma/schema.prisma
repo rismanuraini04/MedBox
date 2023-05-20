@@ -72,13 +72,23 @@ model SmartMedicine {
 }
 
 model SmartBracelet {
+  id                 String                   @id @default(cuid())
+  uniqCode           String                   @unique
+  temperature        String?
+  temperatureHistory BodyTemperatureHistory[]
+  createdAt          DateTime?                @default(now())
+  updatedAt          DateTime?                @updatedAt
+  SmartMedicine      SmartMedicine?           @relation(fields: [smartMedicineId], references: [id])
+  smartMedicineId    String?                  @unique
+}
+
+model BodyTemperatureHistory {
   id              String         @id @default(cuid())
-  uniqCode        String         @unique
   temperature     String?
   createdAt       DateTime?      @default(now())
   updatedAt       DateTime?      @updatedAt
-  SmartMedicine   SmartMedicine? @relation(fields: [smartMedicineId], references: [id])
-  smartMedicineId String?        @unique
+  SmartBracelet   SmartBracelet? @relation(fields: [smartBraceletId], references: [id])
+  smartBraceletId String?
 }
 
 model SmartBox {
@@ -92,14 +102,25 @@ model SmartBox {
 }
 
 model SensorBox {
-  id         String     @id @default(cuid())
-  name       String
-  weight     String?
-  reminder   Reminder[]
-  SmartBox   SmartBox?  @relation(fields: [smartBoxId], references: [id])
-  smartBoxId String?
-  createdAt  DateTime?  @default(now())
-  updatedAt  DateTime?  @updatedAt
+  id              String            @id @default(cuid())
+  name            String
+  weight          String?
+  reminder        Reminder[]
+  medicineHistory MedicineHistory[]
+  SmartBox        SmartBox?         @relation(fields: [smartBoxId], references: [id])
+  smartBoxId      String?
+  createdAt       DateTime?         @default(now())
+  updatedAt       DateTime?         @updatedAt
+}
+
+model MedicineHistory {
+  id          String           @id @default(cuid())
+  status      MEDICINE_STATUS?
+  schedule    String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  SensorBox   SensorBox?       @relation(fields: [sensorBoxId], references: [id])
+  sensorBoxId String?
 }
 
 model Reminder {
@@ -129,4 +150,9 @@ enum REMINDER_TYPE {
   X_TIME_DAY
   EVERY_X_DAY
   EVERY_X_WEEK
+}
+
+enum MEDICINE_STATUS {
+  ONTIME
+  LATE
 }

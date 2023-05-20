@@ -11,17 +11,34 @@
     <label for="frequency" class="d-block mt-5 mb-2">Frequency</label>
     <select name="frequency" id="frequency">
         <option value="X_TIME_DAY">X Times A day</option>
-        <option value="EVERY_X_DAY">Every X days</option>
-        <option value="EVERY_X_WEEK">Every X weeks</option>
+        {{!-- <option value="EVERY_X_DAY">Every X days</option> --}}
+        {{!-- <option value="EVERY_X_WEEK">Every X weeks</option> --}}
     </select>
 
     {{!-- X TIMES A DAY --}}
     <div id="x-times-day">
         <label for="interval" class="mt-4 mb-2">Times</label>
-        <input type="time" class="times-picker py-1 px-2" value="00:00" step="900">
-        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
-        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
-        <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900">
+        <div class="d-flex times-picker-wrapper">
+            <input type="time" class="times-picker py-1 px-2" value="00:00" step="900" data-select="true">
+            <img src="/img/icon_remove.svg" alt="Remove Icon" class="pointer remove-icon hidden">
+        </div>
+        <div class="d-flex times-picker-wrapper hidden">
+            <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900" data-select="false">
+            <img src="/img/icon_remove.svg" alt="Remove Icon" class="pointer remove-icon hidden">
+        </div>
+
+        <div class="d-flex times-picker-wrapper hidden">
+            <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900" data-select="false">
+            <img src="/img/icon_remove.svg" alt="Remove Icon" class="pointer remove-icon hidden">
+        </div>
+
+        <div class="d-flex times-picker-wrapper hidden">
+            <input type="time" class="times-picker py-1 px-2 mt-2" value="00:00" step="900" data-select="false">
+            <img src="/img/icon_remove.svg" alt="Remove Icon" class="pointer remove-icon hidden">
+        </div>
+
+        <p class="schedule pointer" id="schedule-btn">Add More Schedule</p>
+
     </div>
 
     {{!-- EVERY X WEEKS --}}

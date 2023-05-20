@@ -29,20 +29,36 @@ input[type=password] {
     margin-right: .6em;
 }
 
-.times-picker:nth-of-type(1)::before {
+.times-picker-wrapper:nth-of-type(1) .times-picker::before{
     content: 'Time 1:';
 }
 
-.times-picker:nth-of-type(2)::before {
+.times-picker-wrapper:nth-of-type(2) .times-picker::before{
     content: 'Time 2:';
 }
 
-.times-picker:nth-of-type(3)::before {
+.times-picker-wrapper:nth-of-type(3) .times-picker::before{
     content: 'Time 3:';
 }
 
-.times-picker:nth-of-type(4)::before {
+.times-picker-wrapper:nth-of-type(4) .times-picker::before{
     content: 'Time 4:';
+}
+
+
+.remove-icon{
+    margin-left: 1rem;
+    width: 2rem;
+}
+
+.schedule{
+    background: var(--secondary-color-3);
+    border-radius: 5px;
+    color: var(--secondary-color-1);
+    font-weight: bold;
+    margin-top: 1rem;
+    padding: 5px 0;
+    text-align: center;
 }
 
 @media only screen and (max-width: 576px) {

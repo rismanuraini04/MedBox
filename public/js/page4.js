@@ -1,4 +1,7 @@
 const container = document.getElementById("container");
+const braceletId = document
+    .getElementById("bracelet")
+    .getAttribute("data-bracelet-id");
 const tempalte = (data) => {
     return `
     <div class="box-weight bg-main-color-1 m-3 rounded-16"> 
@@ -29,3 +32,9 @@ const fetchData = async () => {
 };
 
 fetchData();
+
+const socket = io();
+socket.on("connect", (s) => {});
+socket.on(`/temp/${braceletId}`, (data) => {
+    document.getElementById("temp").textContent = data;
+});
