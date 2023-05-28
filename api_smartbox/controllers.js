@@ -31,11 +31,9 @@ exports.generateId = async (req, res) => {
           create: [
             {
               name: "Box 1",
-              weight: 0,
             },
             {
               name: "Box 2",
-              weight: 0,
             },
           ],
         },
