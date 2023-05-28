@@ -36,13 +36,13 @@ Gunakan topic di atas jika ingin memperbaharui data berat obat. Ganti `+` dengan
 
 ```json
 {
-    "id": "kode unik perangkat smart bracelet",
+    "id": "kode unik perangkat smart box",
     "Box 1": "str number",
     "Box 2": "str number"
 }
 ```
 
-Contoh pengiriman data pada topin update temprature seperti berikut:
+Contoh pengiriman data pada topik update temprature seperti berikut:
 
 ```json
 //topic /smartbox/update/weight/A9Cac
@@ -54,6 +54,8 @@ Contoh pengiriman data pada topin update temprature seperti berikut:
 }
 ```
 
+3. Update History Pengambilan Obat
+
 ```json
 //topic /smartbox/update/history/A9Cac
 //payload
@@ -61,4 +63,10 @@ Contoh pengiriman data pada topin update temprature seperti berikut:
     "id": "A9Cac",
     "box": "Box 2"
 }
+```
+
+4. Topic Untuk Perangkat Mendengarkan Event reminder
+
+```
+reminder-SMART_BOX_UNIQUE_ID
 ```
