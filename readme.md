@@ -10,8 +10,8 @@ Gunakan topic di atas jika ingin memperbaharui data temprature. Ganti `+` dengan
 
 ```json
 {
-    "temp": "str number",
-    "id": "kode unik perangkat smart bracelet"
+  "temp": "str number",
+  "id": "kode unik perangkat smart bracelet"
 }
 ```
 
@@ -21,8 +21,8 @@ Contoh pengiriman data pada topin update temprature seperti berikut:
 //topic /bracelet/update/temp/GsEgt
 //payload
 {
-    "temp": "30",
-    "id": "GsEgt"
+  "temp": "30",
+  "id": "GsEgt"
 }
 ```
 
@@ -36,9 +36,9 @@ Gunakan topic di atas jika ingin memperbaharui data berat obat. Ganti `+` dengan
 
 ```json
 {
-    "id": "kode unik perangkat smart box",
-    "Box 1": "str number",
-    "Box 2": "str number"
+  "id": "kode unik perangkat smart box",
+  "Box 1": "str number",
+  "Box 2": "str number"
 }
 ```
 
@@ -48,9 +48,9 @@ Contoh pengiriman data pada topik update temprature seperti berikut:
 //topic /smartbox/update/weight/A9Cac
 //payload
 {
-    "id": "A9Cac",
-    "Box 1": "11",
-    "Box 2": "8"
+  "id": "A9Cac",
+  "Box 1": "11",
+  "Box 2": "8"
 }
 ```
 
@@ -60,8 +60,8 @@ Contoh pengiriman data pada topik update temprature seperti berikut:
 //topic /smartbox/update/history/A9Cac
 //payload
 {
-    "id": "A9Cac",
-    "box": "Box 2"
+  "id": "A9Cac",
+  "box": "Box 2"
 }
 ```
 
@@ -69,4 +69,18 @@ Contoh pengiriman data pada topik update temprature seperti berikut:
 
 ```
 reminder-SMART_BOX_UNIQUE_ID
+```
+
+5. Topic Untuk memperbaharui riwayat pengambilan obat ketika terlambat
+
+```
+/smartbox/update/not-taken/history/SMART_BOX_UNIQUE_ID
+```
+
+```
+{
+  "id":"SMART_BOX_UNIQUE_ID",
+  "box":"Box 1",
+  "schedule":"Panadol medicine schedule 1 for, 10 Juni 2023 12.43@Panadol"
+}
 ```

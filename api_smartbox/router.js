@@ -12,5 +12,9 @@ router.delete("/reminder/:id", controllers.deleteSensorBoxRemider);
 
 mqttTopic.listener("/update/weight/+", controllers.updateMedicineWeight);
 mqttTopic.listener("/update/history/+", controllers.updateMedicineHistory);
+mqttTopic.listener(
+  "/update/not-taken/history/+",
+  controllers.updateNotTakenMedicineHistory
+);
 
 module.exports = { router, mqttTopic };

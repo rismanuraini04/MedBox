@@ -5,7 +5,8 @@ const Scheduler = require("../services/scheduler");
 const ITEM_LIMIT = 20;
 const WEIGHT_LIMIT = 8;
 const { getUser } = require("../services/auth");
-
+const { sendWhatsappNotification } = require("../services/notification");
+const { days } = require("../services/timeformater");
 exports.generateId = async (req, res) => {
   try {
     const characters =
@@ -107,6 +108,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                 id: sensorBoxID,
               },
               select: {
+                name: true,
                 SmartBox: {
                   select: {
                     uniqCode: true,
@@ -116,16 +118,20 @@ exports.setSensorBoxRemider = async (req, res) => {
             });
             await req.app.mqttpublish(
               `reminder-${sensorBox.SmartBox.uniqCode}`,
-              "[MQTT]: Jangan Lupa Minum Obat"
+              `${name} medicine schedule ${i + 1} (${
+                sensorBox.name
+              }) for, ${days(schedule)}@${name}`
             ); // publish data for mqtt
             console.log(`Mqtt set reminder-${sensorBox.SmartBox.uniqCode}`);
             const payload = JSON.stringify({
               title: "Medication Reminder",
               body: "Don't forget to take your medication on time. Stay on top of your health and wellness by following your prescribed regimen.",
             });
+
             const user = await prisma.user.findUnique({
               where: { id: userID },
               select: {
+                phone: true,
                 subscription: {
                   select: {
                     subscriptionExpiredAt: true,
@@ -135,6 +141,18 @@ exports.setSensorBoxRemider = async (req, res) => {
                 },
               },
             });
+
+            if (user.phone) {
+              sendWhatsappNotification({
+                url: "https://api.fonnte.com/send",
+                body: {
+                  target: user.phone,
+                  message:
+                    "Don't forget to take your medication on time. Stay on top of your health and wellness by following your prescribed regimen.",
+                },
+              });
+            }
+
             user.subscription.forEach(async (subs) => {
               // Hanya user yang masih login yang bisa menerima notifikasi
               if (new Date() < new Date(subs.subscriptionExpiredAt)) {
@@ -262,6 +280,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
       select: {
         SensorBox: {
           select: {
+            name: true,
             SmartBox: {
               select: {
                 uniqCode: true,
@@ -299,8 +318,10 @@ exports.updateSensorBoxRemider = async (req, res) => {
           console.log(`Schedule set at ${schedule}`);
           const taskId = Scheduler.setTask(schedule, async function () {
             await req.app.mqttpublish(
-              `reminder-${reminder.SensorBox.SmartBox.uniqCode}`,
-              "[MQTT]: Jangan Lupa Minum Obat"
+              `reminder-${sensorBox.SmartBox.uniqCode}`,
+              `${name} medicine schedule ${i + 1} (${
+                reminder.SensorBox.name
+              }) for, ${days(schedule)}@${name}`
             ); // publish data for mqtt
             console.log(
               `Mqtt set reminder-${reminder.SensorBox.SmartBox.uniqCode}`
@@ -312,6 +333,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
             const user = await prisma.user.findUnique({
               where: { id: userID },
               select: {
+                phone: true,
                 subscription: {
                   select: {
                     subscriptionExpiredAt: true,
@@ -321,6 +343,18 @@ exports.updateSensorBoxRemider = async (req, res) => {
                 },
               },
             });
+
+            if (user.phone) {
+              sendWhatsappNotification({
+                url: "https://api.fonnte.com/send",
+                body: {
+                  target: user.phone,
+                  message:
+                    "Don't forget to take your medication on time. Stay on top of your health and wellness by following your prescribed regimen.",
+                },
+              });
+            }
+
             user.subscription.forEach(async (subs) => {
               // Hanya user yang masih login yang bisa menerima notifikasi
               if (new Date() < new Date(subs.subscriptionExpiredAt)) {
@@ -469,6 +503,7 @@ exports.updateMedicineWeight = async (data, payload) => {
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
+          phone: true,
           subscription: {
             select: {
               subscriptionExpiredAt: true,
@@ -495,6 +530,17 @@ exports.updateMedicineWeight = async (data, payload) => {
           });
         }
       });
+
+      if (user.phone) {
+        sendWhatsappNotification({
+          url: "https://api.fonnte.com/send",
+          body: {
+            target: user.phone,
+            message:
+              "Low Medicene Stock\nYour stock is running low, don't forget to restock soon.",
+          },
+        });
+      }
     }
 
     // Update Sensor Box Data
@@ -535,9 +581,9 @@ exports.updateMedicineHistory = async (data, payload) => {
             id: true,
             name: true,
             reminder: {
-              where: {
-                reminder_status: true,
-              },
+              // where: {
+              //   reminder_status: true,
+              // },
               orderBy: {
                 createdAt: "desc",
               },
@@ -639,6 +685,49 @@ exports.updateMedicineHistory = async (data, payload) => {
         console.log(`JADWAL ${i}: TIDAK MASUK KATEGORI WAKTU`);
       }
       // i = i + 1;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateNotTakenMedicineHistory = async (data, payload) => {
+  try {
+    const body = JSON.parse(data);
+    const id = body.id;
+    const box = body.box;
+    const schedule = body.schedule;
+
+    const smartBox = await prisma.smartBox.findFirst({
+      where: {
+        uniqCode: id,
+      },
+      select: {
+        id: true,
+        sensorBox: {
+          where: {
+            name: box,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    console.log(smartBox);
+
+    await prisma.medicineHistory.create({
+      data: {
+        schedule: schedule,
+        status: "NOT_TAKEN",
+        SensorBox: {
+          connect: {
+            id: smartBox.sensorBox[0].id,
+          },
+        },
+      },
     });
   } catch (error) {
     console.log(error);
