@@ -1,7 +1,10 @@
 const container = document.getElementById("container");
+const medicineBox1 = document.getElementById("medicine-box-1");
+const medicineBox2 = document.getElementById("medicine-box-2");
 const braceletId = document
     .getElementById("bracelet")
     .getAttribute("data-bracelet-id");
+
 const tempalte = (data) => {
     return `
     <div class="box-weight bg-main-color-1 m-3 rounded-16"> 
@@ -18,20 +21,30 @@ const tempalte = (data) => {
     </div>
     `;
 };
-const fetchData = async () => {
-    const resp = await httpRequest({
-        url: "api/v1/smartmedicine/detail",
-        method: "GET",
-    });
-    resp.data.smartBox.sensorBox.forEach((data) => {
-        container.insertAdjacentHTML("afterbegin", tempalte(data));
-    });
 
-    document.getElementById("temp").textContent =
-        resp.data.smartBracelet.temperature;
+const loadSmartBoxCard = (data, medicineBox) => {
+    medicineBox.childNodes[1].childNodes[1].childNodes[1].textContent =
+        data.weight;
+    medicineBox.childNodes[3].setAttribute("href", `options/${data.id}`);
+    medicineBox.childNodes[3].childNodes[1].textContent = data.name;
 };
 
-fetchData();
+const loadData = (data) => {
+    document.getElementById("temp").textContent =
+        data.smartBracelet.temperature;
+    if (data.smartBox.sensorBox[0].name == "Box 1") {
+        loadSmartBoxCard(data.smartBox.sensorBox[0], medicineBox1);
+    } else {
+        loadSmartBoxCard(data.smartBox.sensorBox[1], medicineBox1);
+    }
+
+    if (data.smartBox.sensorBox[1].name == "Box 2") {
+        loadSmartBoxCard(data.smartBox.sensorBox[1], medicineBox2);
+    } else {
+        loadSmartBoxCard(data.smartBox.sensorBox[0], medicineBox2);
+    }
+};
+generalDataLoader({ url: "api/v1/smartmedicine/detail", func: loadData });
 
 const socket = io();
 socket.on("connect", (s) => {});
