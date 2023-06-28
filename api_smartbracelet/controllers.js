@@ -1,5 +1,6 @@
 const prisma = require("../prisma/client");
 const webpush = require("web-push");
+const { sendWhatsappNotification } = require("../services/notification");
 const TEMPRATURE_RULE_1 = 38; //Jika lebih dari 38 beri reminder untuk minum obat
 const TEMPRATURE_RULE_2 = 41; //Jika lebih dari 41 beri notifikasi untuk pergi ke dokter
 const HISTORY_INTERVAL = 10;
@@ -135,6 +136,7 @@ exports.updateTemprature = async (data, feedback) => {
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
+          phone: true,
           subscription: {
             select: {
               subscriptionExpiredAt: true,
@@ -161,6 +163,16 @@ exports.updateTemprature = async (data, feedback) => {
           });
         }
       });
+
+      if (user?.phone) {
+        sendWhatsappNotification({
+          url: "https://api.fonnte.com/send",
+          body: {
+            target: user.phone,
+            message: payload,
+          },
+        });
+      }
     }
 
     console.log("Success Update Temprature");

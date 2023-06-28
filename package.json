@@ -1,9 +1,9 @@
 {
-    "name": "mvc-standard-template",
+    "name": "smart-medicine-server",
     "version": "1.0.0",
-    "description": "This template program is a standard program with an MVC architecture inspired by the framework structure used by Django (Python).",
+    "description": "",
     "main": "app.js",
-    "author": "Dimas Aulia Fachrudin",
+    "author": "Risma Nuraini",
     "license": "MIT",
     "dependencies": {
         "@prisma/client": "^4.4.0",

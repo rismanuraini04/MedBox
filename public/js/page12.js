@@ -1,5 +1,6 @@
 const sensorBoxId = window.location.href.split("/").at(-1); //get sensor box id from url
 const historyContainer = document.getElementById("history-container");
+const loadMore = document.getElementById("loadMore");
 const ICON = {
   ONTIME: "/img/check.svg",
   LATE: "/img/cross.svg",
@@ -8,7 +9,9 @@ const ICON = {
 
 const historyTemplate = (data) => {
   return `
-    <div class="bg-secondary-color-2 p-4 rounded-9 d-flex justify-content-between align-items-center mt-4">
+    <div class="history bg-secondary-color-2 p-4 rounded-9 d-flex justify-content-between align-items-center mt-4" data-id="${
+      data.id
+    }">
         <div>
             <img src="/img/obat.svg" alt="">
         </div>
@@ -38,4 +41,12 @@ const historyHandler = (data) => {
 generalDataLoader({
   url: `/api/v1/smartbox/reminder/history/?sensorBoxId=${sensorBoxId}`,
   func: historyHandler,
+});
+loadMore.addEventListener("click", (e) => {
+  e.preventDefault();
+  const lastId = lastCursorFinder("history", "data-id");
+  generalDataLoader({
+    url: `/api/v1/smartbox/reminder/history/?sensorBoxId=${sensorBoxId}&cursor=${lastId}`,
+    func: historyHandler,
+  });
 });

@@ -1,5 +1,6 @@
 const prisma = require("../prisma/client");
 const webpush = require("web-push");
+const { sendWhatsappNotification } = require("../services/notification");
 
 const checkTime = async () => {
   const threeDaysBefore = new Date();

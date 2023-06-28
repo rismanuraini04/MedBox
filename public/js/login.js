@@ -16,4 +16,15 @@ btn.addEventListener("click", async (e) => {
   if (resp.success === true) {
     return (window.location = "/");
   }
+
+  if (resp.success !== true) {
+    let errorDescription;
+    if (resp.errors?.username) {
+      errorDescription = resp.errors?.username?.detail;
+    }
+    if (resp.errors?.password) {
+      errorDescription = resp.errors?.password?.detail;
+    }
+    Swal.fire(resp.message, errorDescription, "error");
+  }
 });
