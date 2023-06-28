@@ -5,166 +5,166 @@ const TEMPRATURE_RULE_2 = 41; //Jika lebih dari 41 beri notifikasi untuk pergi k
 const HISTORY_INTERVAL = 10;
 
 exports.generateId = async (req, res) => {
-    try {
-        const characters =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  try {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-        function generateString(length) {
-            let result = "";
-            const charactersLength = characters.length;
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(
-                    Math.floor(Math.random() * charactersLength)
-                );
-            }
+    function generateString(length) {
+      let result = "";
+      const charactersLength = characters.length;
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
+      }
 
-            return result;
-        }
-
-        const braceletid = generateString(5);
-        const bracelet = await prisma.smartBracelet.create({
-            data: {
-                uniqCode: braceletid,
-                temperature: "0",
-            },
-            select: {
-                id: true,
-                uniqCode: true,
-            },
-        });
-        return res.status(200).json({ bracelet });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error });
+      return result;
     }
+
+    const braceletid = generateString(5);
+    const bracelet = await prisma.smartBracelet.create({
+      data: {
+        uniqCode: braceletid,
+        temperature: "0",
+      },
+      select: {
+        id: true,
+        uniqCode: true,
+      },
+    });
+    return res.status(200).json({ bracelet });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
+  }
 };
 
 exports.updateTemprature = async (data, feedback) => {
-    const body = JSON.parse(data);
-    feedback.socket.emit(`/temp/${body.id}`, body.temp);
-    try {
-        const bracelet = await prisma.smartBracelet.update({
-            where: {
-                uniqCode: body.id,
+  const body = JSON.parse(data);
+  feedback.socket.emit(`/temp/${body.id}`, body.temp);
+  try {
+    const bracelet = await prisma.smartBracelet.update({
+      where: {
+        uniqCode: body.id,
+      },
+      data: {
+        temperature: body.temp,
+      },
+      select: {
+        SmartMedicine: {
+          select: {
+            User: {
+              select: {
+                id: true,
+              },
             },
-            data: {
-                temperature: body.temp,
+          },
+        },
+      },
+    });
+
+    // INFO: Temp History
+    const lastTempHistory = await prisma.bodyTemperatureHistory.findFirst({
+      where: {
+        SmartBracelet: {
+          is: {
+            uniqCode: body.id,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    // Jika Belum Ada Data Yang tersimpan di history, maka simpan
+    if (lastTempHistory === null) {
+      console.log("History empty, Saving First Data");
+      await prisma.bodyTemperatureHistory.create({
+        data: {
+          temperature: body.temp,
+          SmartBracelet: {
+            connect: {
+              uniqCode: body.id,
             },
-            select: {
-                SmartMedicine: {
-                    select: {
-                        User: {
-                            select: {
-                                id: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        // INFO: Temp History
-        const lastTempHistory = await prisma.bodyTemperatureHistory.findFirst({
-            where: {
-                SmartBracelet: {
-                    is: {
-                        uniqCode: body.id,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
-
-        // Jika Belum Ada Data Yang tersimpan di history, maka simpan
-        if (lastTempHistory === null) {
-            console.log("History empty, Saving First Data");
-            await prisma.bodyTemperatureHistory.create({
-                data: {
-                    temperature: body.temp,
-                    SmartBracelet: {
-                        connect: {
-                            uniqCode: body.id,
-                        },
-                    },
-                },
-            });
-        }
-
-        if (lastTempHistory !== null) {
-            const timeDiffInMinutes =
-                (Date.now() - lastTempHistory.createdAt) / 1000 / 60;
-            console.log(timeDiffInMinutes);
-
-            // Save New DB
-            if (timeDiffInMinutes > HISTORY_INTERVAL) {
-                await prisma.bodyTemperatureHistory.create({
-                    data: {
-                        temperature: body.temp,
-                        SmartBracelet: {
-                            connect: {
-                                uniqCode: body.id,
-                            },
-                        },
-                    },
-                });
-            }
-        }
-
-        // INFO: Notification
-        let notificiationData = {};
-        let showNotif = false;
-        const userId = bracelet.SmartMedicine.User.id;
-        if (body.temp >= TEMPRATURE_RULE_1 && body.temp < TEMPRATURE_RULE_2) {
-            showNotif = true;
-            notificiationData["title"] = "Body temperature warning";
-            notificiationData["body"] =
-                "Are you feel sick! Your body temperature is high. Take immediate action to cool down and consider taking appropriate medication. Prioritize your health and well-being.";
-        }
-
-        if (body.temp > TEMPRATURE_RULE_2) {
-            showNotif = true;
-            notificiationData["title"] = "Body temperature warning";
-            notificiationData["body"] =
-                "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a thorough evaluation and appropriate medical guidance";
-        }
-
-        if (showNotif) {
-            const payload = JSON.stringify(notificiationData);
-            const user = await prisma.user.findUnique({
-                where: { id: userId },
-                select: {
-                    subscription: {
-                        select: {
-                            subscriptionExpiredAt: true,
-                            identifier: true,
-                            subscriptionToken: true,
-                        },
-                    },
-                },
-            });
-
-            user.subscription.forEach(async (subs) => {
-                // Hanya user yang masih login yang bisa menerima notifikasi
-                if (new Date() < new Date(subs.subscriptionExpiredAt)) {
-                    const subscription = JSON.parse(subs.subscriptionToken);
-                    console.log("Notification Wes Send");
-                    webpush
-                        .sendNotification(subscription, payload)
-                        .catch((err) => console.error(`ERR: ${err}`));
-                } else {
-                    // Jika Token Sudah Kadaluarsa maka hapus dari database
-                    console.log("User Subscription Expired");
-                    await prisma.subscription.delete({
-                        where: { identifier: subs.identifier },
-                    });
-                }
-            });
-        }
-
-        console.log("Success Update Temprature");
-    } catch (error) {
-        console.log(error);
+          },
+        },
+      });
     }
+
+    if (lastTempHistory !== null) {
+      const timeDiffInMinutes =
+        (Date.now() - lastTempHistory.createdAt) / 1000 / 60;
+      console.log(timeDiffInMinutes);
+
+      // Save New DB
+      if (timeDiffInMinutes > HISTORY_INTERVAL) {
+        await prisma.bodyTemperatureHistory.create({
+          data: {
+            temperature: body.temp,
+            SmartBracelet: {
+              connect: {
+                uniqCode: body.id,
+              },
+            },
+          },
+        });
+      }
+    }
+
+    // INFO: Notification
+    let notificiationData = {};
+    let showNotif = false;
+    const userId = bracelet.SmartMedicine.User.id;
+    if (body.temp >= TEMPRATURE_RULE_1 && body.temp < TEMPRATURE_RULE_2) {
+      showNotif = true;
+      notificiationData["title"] = "Body temperature warning";
+      notificiationData["body"] =
+        "Are you feel sick! Your body temperature is high. Take immediate action to cool down and consider taking appropriate medication. Prioritize your health and well-being.";
+    }
+
+    if (body.temp > TEMPRATURE_RULE_2) {
+      showNotif = true;
+      notificiationData["title"] = "Body temperature warning";
+      notificiationData["body"] =
+        "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a thorough evaluation and appropriate medical guidance";
+    }
+
+    if (showNotif) {
+      const payload = JSON.stringify(notificiationData);
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          subscription: {
+            select: {
+              subscriptionExpiredAt: true,
+              identifier: true,
+              subscriptionToken: true,
+            },
+          },
+        },
+      });
+
+      user.subscription.forEach(async (subs) => {
+        // Hanya user yang masih login yang bisa menerima notifikasi
+        if (new Date() < new Date(subs.subscriptionExpiredAt)) {
+          const subscription = JSON.parse(subs.subscriptionToken);
+          console.log("Notification Wes Send");
+          webpush
+            .sendNotification(subscription, payload)
+            .catch((err) => console.error(`ERR: ${err}`));
+        } else {
+          // Jika Token Sudah Kadaluarsa maka hapus dari database
+          console.log("User Subscription Expired");
+          await prisma.subscription.delete({
+            where: { identifier: subs.identifier },
+          });
+        }
+      });
+    }
+
+    console.log("Success Update Temprature");
+  } catch (error) {
+    console.log(error);
+  }
 };
