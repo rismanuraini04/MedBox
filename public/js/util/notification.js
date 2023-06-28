@@ -25,6 +25,7 @@ if ("Notification" in window) {
 
 document.getElementById("notif-button").addEventListener("click", (e) => {
   e.preventDefault();
+  console.log("Notification Click To Grandted");
   Notification.requestPermission().then(async (permission) => {
     if (permission === "granted") {
       httpRequest({
