@@ -20,6 +20,7 @@
         "mqtt": "^4.3.7",
         "node-cron": "^3.0.2",
         "nodemailer": "^6.8.0",
+        "prisma-dbml-generator": "^0.10.0",
         "socket.io": "^4.6.1",
         "web-push": "^3.5.0"
     },

@@ -1,0 +1,171 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Role {
+  id String [pk]
+  name String [unique, not null]
+  user User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table User {
+  id String [pk]
+  username String [unique, not null]
+  email String [unique, not null]
+  phone String [unique]
+  password String [not null]
+  passwordUpdatedAt DateTime [not null]
+  accountIsVerified Boolean [not null, default: false]
+  emailIsVerified Boolean [not null, default: false]
+  token String [unique]
+  tokenExpiredAt DateTime
+  tokenType TOKEN_TYPE
+  subscription Subscription [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  role Role [not null]
+  roleId String [not null]
+  profil Profil
+  smartMedicine SmartMedicine
+}
+
+Table Subscription {
+  id String [pk]
+  identifier String [unique, not null]
+  subscriptionToken String
+  subscriptionExpiredAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  User User
+  userId String
+}
+
+Table Profil {
+  id String [pk]
+  full_name String
+  photo String
+  user User [not null]
+  userId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table SmartMedicine {
+  id String [pk]
+  name String [not null]
+  User User
+  userId String [unique]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  smartBracelet SmartBracelet
+  smartBox SmartBox
+}
+
+Table SmartBracelet {
+  id String [pk]
+  uniqCode String [unique, not null]
+  temperature String
+  temperatureHistory BodyTemperatureHistory [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  SmartMedicine SmartMedicine
+  smartMedicineId String [unique]
+}
+
+Table BodyTemperatureHistory {
+  id String [pk]
+  temperature String
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  SmartBracelet SmartBracelet
+  smartBraceletId String
+}
+
+Table SmartBox {
+  id String [pk]
+  uniqCode String [unique, not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  SmartMedicine SmartMedicine
+  smartMedicineId String [unique]
+  sensorBox SensorBox [not null]
+}
+
+Table SensorBox {
+  id String [pk]
+  name String [not null]
+  weight String
+  reminder Reminder [not null]
+  medicineHistory MedicineHistory [not null]
+  SmartBox SmartBox
+  smartBoxId String
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+Table MedicineHistory {
+  id String [pk]
+  status MEDICINE_STATUS
+  schedule String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  SensorBox SensorBox
+  sensorBoxId String
+}
+
+Table Reminder {
+  id String [pk]
+  name String
+  startDate DateTime
+  finishDate DateTime
+  interval String
+  time String
+  reminder_task_id String
+  reminder_before String
+  reminder_after String
+  reminder_type REMINDER_TYPE
+  reminder_status Boolean
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  SensorBox SensorBox
+  sensorBoxId String
+}
+
+Enum TOKEN_TYPE {
+  RESET_TOKEN
+  VERIFICATION_TOKEN
+}
+
+Enum REMINDER_TYPE {
+  X_TIME_DAY
+  EVERY_X_DAY
+  EVERY_X_WEEK
+}
+
+Enum MEDICINE_STATUS {
+  ONTIME
+  LATE
+  NOT_TAKEN
+}
+
+Ref: User.roleId > Role.id
+
+Ref: Subscription.userId > User.id
+
+Ref: Profil.userId - User.id [delete: Cascade]
+
+Ref: SmartMedicine.userId - User.id
+
+Ref: SmartBracelet.smartMedicineId - SmartMedicine.id
+
+Ref: BodyTemperatureHistory.smartBraceletId > SmartBracelet.id
+
+Ref: SmartBox.smartMedicineId - SmartMedicine.id
+
+Ref: SensorBox.smartBoxId > SmartBox.id
+
+Ref: MedicineHistory.sensorBoxId > SensorBox.id
+
+Ref: Reminder.sensorBoxId > SensorBox.id

@@ -43,7 +43,7 @@ const checkTime = async () => {
         tempAvg = tempSum / tempLen;
       }
 
-      if (tempAvg >= 41) {
+      if (tempAvg >= 38) {
         const payload = JSON.stringify({
           title: "Body temperature warning",
           body: "Are you feel sick! Your body temperature is high in 3 day. It is strongly advised to consult a doctor promptly for a thorough evaluation and appropriate medical guidance",
