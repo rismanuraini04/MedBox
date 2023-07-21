@@ -56,7 +56,7 @@ class MqttServer {
 
             const client = this.client;
             const response = {
-                send: function (topic, payload) {
+                send: function (topic, payload) { //callback function, jika topic A maka yg dijalankan adalah fungsi A
                     client.publish(
                         topic,
                         payload,

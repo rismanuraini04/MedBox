@@ -41,6 +41,7 @@ const checkTime = async () => {
       let tempAvg;
       if (tempLen > 0) {
         tempAvg = tempSum / tempLen;
+        console.log(userId, tempAvg);
       }
 
       if (tempAvg >= 38) {

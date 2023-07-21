@@ -81,6 +81,6 @@ reminder-SMART_BOX_UNIQUE_ID
 {
   "id":"SMART_BOX_UNIQUE_ID",
   "box":"Box 1",
-  "schedule":"Panadol medicine schedule 1 for, 10 Juni 2023 12.43@Panadol"
+  "schedule":"Panadol medicine schedule 1 for, 14 Juli 2023 12.43@Panadol"
 }
 ```

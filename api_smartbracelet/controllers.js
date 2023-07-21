@@ -128,7 +128,7 @@ exports.updateTemprature = async (data, feedback) => {
       showNotif = true;
       notificiationData["title"] = "Body temperature warning";
       notificiationData["body"] =
-        "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a thorough evaluation and appropriate medical guidance";
+        "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a through evaluation and appropriate medical guidance";
     }
 
     if (showNotif) {
