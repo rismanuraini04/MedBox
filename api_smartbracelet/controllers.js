@@ -169,7 +169,7 @@ exports.updateTemprature = async (data, feedback) => {
           url: "https://api.fonnte.com/send",
           body: {
             target: user.phone,
-            message: payload,
+            message: `${notificiationData["title"]}\n\n${notificiationData["body"]}`,
           },
         });
       }
