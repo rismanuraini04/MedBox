@@ -121,6 +121,7 @@ exports.updateTemprature = async (data, feedback) => {
             Number(body.temp) >= TEMPRATURE_RULE_1 &&
             Number(body.temp) < TEMPRATURE_RULE_2
         ) {
+            console.log("RULE NO 1");
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
@@ -128,6 +129,7 @@ exports.updateTemprature = async (data, feedback) => {
         }
 
         if (Number(body.temp) > Number(TEMPRATURE_RULE_2)) {
+            console.log("RULE NO 2");
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
