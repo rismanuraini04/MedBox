@@ -117,14 +117,17 @@ exports.updateTemprature = async (data, feedback) => {
         let notificiationData = {};
         let showNotif = false;
         const userId = bracelet.SmartMedicine.User.id;
-        if (body.temp >= TEMPRATURE_RULE_1 && body.temp < TEMPRATURE_RULE_2) {
+        if (
+            Number(body.temp) >= TEMPRATURE_RULE_1 &&
+            Number(body.temp) < TEMPRATURE_RULE_2
+        ) {
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
                 "Are you feel sick! Your body temperature is high. Take immediate action to cool down and consider taking appropriate medication. Prioritize your health and well-being.";
         }
 
-        if (body.temp > TEMPRATURE_RULE_2) {
+        if (Number(body.temp) > Number(TEMPRATURE_RULE_2)) {
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
