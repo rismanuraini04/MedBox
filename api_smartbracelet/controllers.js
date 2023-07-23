@@ -131,6 +131,7 @@ exports.updateTemprature = async (data, feedback) => {
                 "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a through evaluation and appropriate medical guidance";
         }
 
+        console.log("SHOW NOTIF STATUS: ", showNotif);
         if (showNotif) {
             console.log("Should Be Show Tempartue Notification");
             const payload = JSON.stringify(notificiationData);
