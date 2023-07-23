@@ -26,7 +26,7 @@ const PUBLIC_VAPI_KEY = process.env.PUBLIC_VAPI_KEY;
 const PRIVATE_VAPI_KEY = process.env.PRIVATE_VAPI_KEY;
 
 webpush.setVapidDetails(
-  "mailto:dimasauliafachrudin@gmail.com",
+  "mailto:rismanuraini04@gmail.com",
   PUBLIC_VAPI_KEY,
   PRIVATE_VAPI_KEY
 );

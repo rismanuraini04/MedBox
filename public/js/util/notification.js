@@ -1,5 +1,5 @@
 const publicVapidKey =
-  "BGUZ_I5IESIj5cDceEdKIX0YZvy-ARisS5Rev1O1uLO9mekWXBNMs9RLdrB6HwtJCfOicQju4QbIfBOJTT6Gufw";
+  "BDEYkT6nOzWSjLrTKAmFEgJFNTFwIuDsHRX0VraHgI3deJdZzt0QrgIrJAbMN7aR5SQbmjM_LwIxnYUrUca6_yQ";
 const notification = document.getElementById("notif");
 
 if ("Notification" in window) {
