@@ -121,22 +121,19 @@ exports.updateTemprature = async (data, feedback) => {
             Number(body.temp) >= TEMPRATURE_RULE_1 &&
             Number(body.temp) < TEMPRATURE_RULE_2
         ) {
-            console.log("RULE NO 1");
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
                 "Are you feel sick! Your body temperature is high. Take immediate action to cool down and consider taking appropriate medication. Prioritize your health and well-being.";
         }
 
-        if (Number(body.temp) > Number(TEMPRATURE_RULE_2)) {
-            console.log("RULE NO 2");
+        if (Number(body.temp) >= Number(TEMPRATURE_RULE_2)) {
             showNotif = true;
             notificiationData["title"] = "Body temperature warning";
             notificiationData["body"] =
                 "Are you feel sick! Your body temperature is high. It is strongly advised to consult a doctor promptly for a through evaluation and appropriate medical guidance";
         }
 
-        console.log("SHOW NOTIF STATUS: ", showNotif);
         if (showNotif) {
             console.log("Should Be Show Tempartue Notification");
             const payload = JSON.stringify(notificiationData);
