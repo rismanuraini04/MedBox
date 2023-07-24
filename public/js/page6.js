@@ -1,17 +1,42 @@
 const numberControl = (id) => {
-  let number = 0;
-  const container = document.getElementById(id);
-  container.childNodes[1].addEventListener("click", (e) => {
-    if (number > 0) number -= 1;
-    container.childNodes[3].value = number;
-    e.preventDefault();
-  });
-  container.childNodes[5].addEventListener("click", (e) => {
-    number += 1;
-    container.childNodes[3].value = number;
-    e.preventDefault();
-  });
+    let number = 0;
+    const container = document.getElementById(id);
+    container.childNodes[1].addEventListener("click", (e) => {
+        if (number > 0) number -= 1;
+        container.childNodes[3].value = number;
+        e.preventDefault();
+    });
+    container.childNodes[5].addEventListener("click", (e) => {
+        number += 1;
+        container.childNodes[3].value = number;
+        e.preventDefault();
+    });
 };
+
+function subtractTime(timeString, hoursToSubtract, minutesToSubtract) {
+    // Parse the input time string to extract hours and minutes
+    const [inputHours, inputMinutes] = timeString.split(":").map(Number);
+
+    // Calculate the total minutes in the input time
+    const totalInputMinutes = inputHours * 60 + inputMinutes;
+
+    // Calculate the total minutes to subtract
+    const totalMinutesToSubtract = hoursToSubtract * 60 + minutesToSubtract;
+
+    // Calculate the result total minutes
+    const resultTotalMinutes = totalInputMinutes - totalMinutesToSubtract;
+
+    // Calculate the resulting hours and minutes
+    const resultHours = Math.floor(resultTotalMinutes / 60);
+    const resultMinutes = resultTotalMinutes % 60;
+
+    // Format the result as "hh:mm" with leading zeros if needed
+    const resultTimeString = `${String(resultHours).padStart(2, "0")}:${String(
+        resultMinutes
+    ).padStart(2, "0")}`;
+
+    return resultTimeString;
+}
 
 // INFO: Control Form Sliding
 numberControl("week-interval-number-control");
@@ -33,34 +58,34 @@ let scheduleCount = 0;
 
 // Info: Control Form Appearance
 const updateFrequency = () => {
-  xTimeDay.style.display = "none";
-  everyXDay.style.display = "none";
-  everyXWeek.style.display = "none";
-  daySchedule.style.display = "none";
-  weekSchedule.style.display = "none";
+    xTimeDay.style.display = "none";
+    everyXDay.style.display = "none";
+    everyXWeek.style.display = "none";
+    daySchedule.style.display = "none";
+    weekSchedule.style.display = "none";
 
-  if (frequencyType === "X_TIME_DAY") {
-    xTimeDay.style.display = "block";
-    daySchedule.style.display = "block";
-  }
+    if (frequencyType === "X_TIME_DAY") {
+        xTimeDay.style.display = "block";
+        daySchedule.style.display = "block";
+    }
 
-  if (frequencyType === "EVERY_X_DAY") {
-    everyXDay.style.display = "block";
-    weekSchedule.style.display = "block";
-  }
+    if (frequencyType === "EVERY_X_DAY") {
+        everyXDay.style.display = "block";
+        weekSchedule.style.display = "block";
+    }
 
-  if (frequencyType === "EVERY_X_WEEK") {
-    everyXWeek.style.display = "block";
-    weekSchedule.style.display = "block";
-  }
+    if (frequencyType === "EVERY_X_WEEK") {
+        everyXWeek.style.display = "block";
+        weekSchedule.style.display = "block";
+    }
 };
 
 updateFrequency();
 
 frequency.addEventListener("change", (e) => {
-  e.preventDefault();
-  frequencyType = frequency.value;
-  updateFrequency();
+    e.preventDefault();
+    frequencyType = frequency.value;
+    updateFrequency();
 });
 
 //INFO: Handling ketika user memilih X Time A Day
@@ -75,145 +100,148 @@ const startDate = document.getElementById("startDate");
 const finishDate = document.getElementById("finishDate");
 
 document.querySelectorAll(".times-picker").forEach((element, i) => {
-  if (i > 0) {
-    element.parentElement.childNodes[3].addEventListener("click", (e) => {
-      element.parentElement.classList.add("hidden");
-      xTimeDayArray[scheduleCount].setAttribute("data-select", "false");
-      scheduleCount -= 1;
-      if (scheduleCount > 0) {
-        xTimeDayArray[
-          scheduleCount
-        ].parentElement.childNodes[3].classList.remove("hidden");
-      }
-    });
-  }
+    if (i > 0) {
+        element.parentElement.childNodes[3].addEventListener("click", (e) => {
+            element.parentElement.classList.add("hidden");
+            xTimeDayArray[scheduleCount].setAttribute("data-select", "false");
+            scheduleCount -= 1;
+            if (scheduleCount > 0) {
+                xTimeDayArray[
+                    scheduleCount
+                ].parentElement.childNodes[3].classList.remove("hidden");
+            }
+        });
+    }
 });
 
 scheduleBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (scheduleCount < 3) {
-    scheduleCount += 1;
-    if (scheduleCount > 0) {
-      xTimeDayArray[
-        scheduleCount - 1
-      ].parentElement.childNodes[3].classList.add("hidden");
+    e.preventDefault();
+    if (scheduleCount < 3) {
+        scheduleCount += 1;
+        if (scheduleCount > 0) {
+            xTimeDayArray[
+                scheduleCount - 1
+            ].parentElement.childNodes[3].classList.add("hidden");
+        }
+        xTimeDayArray[scheduleCount].parentElement.classList.remove("hidden");
+        xTimeDayArray[
+            scheduleCount
+        ].parentElement.childNodes[3].classList.remove("hidden");
+        xTimeDayArray[scheduleCount].setAttribute("data-select", "true");
     }
-    xTimeDayArray[scheduleCount].parentElement.classList.remove("hidden");
-    xTimeDayArray[scheduleCount].parentElement.childNodes[3].classList.remove(
-      "hidden"
-    );
-    xTimeDayArray[scheduleCount].setAttribute("data-select", "true");
-  }
 });
 
 addButtton.addEventListener("click", async (e) => {
-  e.preventDefault();
-  const times = [];
-  xTimeDayArray.forEach((d) => {
-    if (d.getAttribute("data-select") === "true") {
-      times.push(d.value);
-    }
-  });
-
-  const resp = await httpRequest({
-    url: "/api/v1/smartbox/reminder",
-    body: {
-      name: medicineName.value,
-      sensorBoxID,
-      startDate: startDate.value,
-      finishDate: finishDate.value,
-      interval: "0",
-      times,
-      reminder_type: "X_TIME_DAY",
-    },
-  });
-
-  if (resp.success) {
-    Swal.fire(resp.message).then((_) => {
-      location.reload();
+    e.preventDefault();
+    const times = [];
+    xTimeDayArray.forEach((d) => {
+        if (d.getAttribute("data-select") === "true") {
+            console.log(d.value);
+            times.push(d.value);
+        }
     });
-  }
+
+    const resp = await httpRequest({
+        url: "/api/v1/smartbox/reminder",
+        body: {
+            name: medicineName.value,
+            sensorBoxID,
+            startDate: startDate.value,
+            finishDate: finishDate.value,
+            interval: "0",
+            times,
+            reminder_type: "X_TIME_DAY",
+        },
+    });
+
+    if (resp.success) {
+        Swal.fire(resp.message).then((_) => {
+            location.reload();
+        });
+    }
 });
 
 // INFO: Delete Reminder
 const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async (e) => {
-  e.preventDefault();
-  Swal.fire({
-    title: "Do you want to delete the reminder?",
-    showDenyButton: true,
-    showCancelButton: true,
-    confirmButtonText: "Delete",
-    denyButtonText: `Don't delete`,
-  }).then(async (result) => {
-    /* Read more about isConfirmed, isDenied below */
-    if (result.isConfirmed) {
-      const resp = await httpRequest({
-        url: `/api/v1/smartbox/reminder/${reminderId.getAttribute("data-id")}`,
-        method: "DELETE",
-      });
-      if (resp.success) {
-        Swal.fire("Delete Success!", "", "success").then((_) => {
-          location.reload();
-        });
-      }
-    } else if (result.isDenied) {
-      Swal.fire("Data not delete", "", "info");
+    e.preventDefault();
+    Swal.fire({
+        title: "Do you want to delete the reminder?",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        denyButtonText: `Don't delete`,
+    }).then(async (result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            const resp = await httpRequest({
+                url: `/api/v1/smartbox/reminder/${reminderId.getAttribute(
+                    "data-id"
+                )}`,
+                method: "DELETE",
+            });
+            if (resp.success) {
+                Swal.fire("Delete Success!", "", "success").then((_) => {
+                    location.reload();
+                });
+            }
+        } else if (result.isDenied) {
+            Swal.fire("Data not delete", "", "info");
+        }
+    });
+
+    if (resp.success) {
+        Swal.fire(resp.message);
+        location.reload();
     }
-  });
 
-  if (resp.success) {
-    Swal.fire(resp.message);
-    location.reload();
-  }
-
-  if (!resp.success) {
-    alert("Failed to Delete Reminder");
-  }
+    if (!resp.success) {
+        alert("Failed to Delete Reminder");
+    }
 });
 
 // INFO: Update Reminder
 const updateButtton = document.getElementById("update-button");
 updateButtton.addEventListener("click", async (e) => {
-  e.preventDefault();
-  const times = [];
-  xTimeDayArray.forEach((d) => {
-    if (d.getAttribute("data-select") === "true") {
-      times.push(d.value);
-    }
-  });
-
-  Swal.fire({
-    title: "Are you sure to update the reminder?",
-    showDenyButton: true,
-    showCancelButton: true,
-    confirmButtonText: "Update",
-    denyButtonText: `Don't update`,
-  }).then(async (result) => {
-    const resp = await httpRequest({
-      url: "/api/v1/smartbox/reminder",
-      body: {
-        name: medicineName.value,
-        reminderId: reminderId.getAttribute("data-id"),
-        startDate: startDate.value,
-        finishDate: finishDate.value,
-        interval: "0",
-        times,
-        reminder_type: "X_TIME_DAY",
-      },
-      method: "PATCH",
+    e.preventDefault();
+    const times = [];
+    xTimeDayArray.forEach((d) => {
+        if (d.getAttribute("data-select") === "true") {
+            times.push(d.value);
+        }
     });
 
-    if (resp.success) {
-      Swal.fire(resp.message).then((_) => {
-        location.reload();
-      });
-    }
+    Swal.fire({
+        title: "Are you sure to update the reminder?",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Update",
+        denyButtonText: `Don't update`,
+    }).then(async (result) => {
+        const resp = await httpRequest({
+            url: "/api/v1/smartbox/reminder",
+            body: {
+                name: medicineName.value,
+                reminderId: reminderId.getAttribute("data-id"),
+                startDate: startDate.value,
+                finishDate: finishDate.value,
+                interval: "0",
+                times,
+                reminder_type: "X_TIME_DAY",
+            },
+            method: "PATCH",
+        });
 
-    if (!resp.success) {
-      Swal.fire(resp.message).then((_) => {
-        location.reload();
-      });
-    }
-  });
+        if (resp.success) {
+            Swal.fire(resp.message).then((_) => {
+                location.reload();
+            });
+        }
+
+        if (!resp.success) {
+            Swal.fire(resp.message).then((_) => {
+                location.reload();
+            });
+        }
+    });
 });

@@ -10,6 +10,7 @@ class Scheduler {
      * @returns {String} Returns a string ID that can be use to cancel the task.
      */
     static setTask = function (date, fn) {
+        console.log("Scheduler Get Date of", date);
         const id = crypto.randomUUID();
         if (typeof fn !== "function") {
             throw new Error("expected second argument to be a function");
