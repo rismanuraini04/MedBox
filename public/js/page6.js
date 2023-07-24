@@ -13,30 +13,26 @@ const numberControl = (id) => {
     });
 };
 
-function subtractTime(timeString, hoursToSubtract, minutesToSubtract) {
-    // Parse the input time string to extract hours and minutes
-    const [inputHours, inputMinutes] = timeString.split(":").map(Number);
+const timeOffset = () => {
+    // Get the current date
+    const currentDate = new Date();
 
-    // Calculate the total minutes in the input time
-    const totalInputMinutes = inputHours * 60 + inputMinutes;
+    // Get the time offset in minutes
+    const timeOffsetInMinutes = currentDate.getTimezoneOffset();
 
-    // Calculate the total minutes to subtract
-    const totalMinutesToSubtract = hoursToSubtract * 60 + minutesToSubtract;
+    // Convert the time offset to hours and minutes
+    const hoursOffset = Math.floor(Math.abs(timeOffsetInMinutes) / 60);
+    const minutesOffset = Math.abs(timeOffsetInMinutes) % 60;
 
-    // Calculate the result total minutes
-    const resultTotalMinutes = totalInputMinutes - totalMinutesToSubtract;
+    // Determine the sign of the offset (positive or negative)
+    const sign = timeOffsetInMinutes < 0 ? "+" : "-";
 
-    // Calculate the resulting hours and minutes
-    const resultHours = Math.floor(resultTotalMinutes / 60);
-    const resultMinutes = resultTotalMinutes % 60;
-
-    // Format the result as "hh:mm" with leading zeros if needed
-    const resultTimeString = `${String(resultHours).padStart(2, "0")}:${String(
-        resultMinutes
-    ).padStart(2, "0")}`;
-
-    return resultTimeString;
-}
+    // Create a string representation of the time offset
+    const timeOffsetString = `${sign}${hoursOffset
+        .toString()
+        .padStart(2, "0")}:${minutesOffset.toString().padStart(2, "0")}`;
+    return timeOffsetString;
+};
 
 // INFO: Control Form Sliding
 numberControl("week-interval-number-control");
@@ -53,6 +49,7 @@ const medicineName = document.getElementById("medicine");
 const sensorBoxID = document.getElementById("box-id").getAttribute("data-id");
 const reminderId = document.getElementById("reminder-id");
 const scheduleBtn = document.getElementById("schedule-btn");
+const TIME_OFFSET = timeOffset();
 let frequencyType = frequency.value;
 let scheduleCount = 0;
 
@@ -151,6 +148,7 @@ addButtton.addEventListener("click", async (e) => {
             interval: "0",
             times,
             reminder_type: "X_TIME_DAY",
+            client_time_offset: TIME_OFFSET,
         },
     });
 
@@ -228,6 +226,7 @@ updateButtton.addEventListener("click", async (e) => {
                 interval: "0",
                 times,
                 reminder_type: "X_TIME_DAY",
+                client_time_offset: TIME_OFFSET,
             },
             method: "PATCH",
         });

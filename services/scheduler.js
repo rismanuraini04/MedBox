@@ -11,6 +11,7 @@ class Scheduler {
      */
     static setTask = function (date, fn) {
         console.log("Scheduler Get Date of", date);
+        console.log("Scheduler ISO Time", new Date(date).toISOString());
         const id = crypto.randomUUID();
         if (typeof fn !== "function") {
             throw new Error("expected second argument to be a function");

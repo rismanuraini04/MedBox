@@ -65,6 +65,7 @@ exports.setSensorBoxRemider = async (req, res) => {
             times,
             reminder_type,
             sensorBoxID,
+            client_time_offset,
         } = req.body;
         const taskList = [];
         const scheduleList = [];
