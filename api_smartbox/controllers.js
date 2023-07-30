@@ -81,7 +81,7 @@ exports.setSensorBoxRemider = async (req, res) => {
             client_time_zone
         );
         const finishDateTime = timeAdjusment(
-            `${startDate} ${times.at(-1)}`,
+            `${finishDate} ${times.at(-1)}`,
             client_time_zone
         );
 

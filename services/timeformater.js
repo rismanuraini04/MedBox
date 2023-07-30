@@ -31,7 +31,15 @@ const timeAdjusment = (inputTime, inputTimeZone) => {
     );
     const gmtDate = incomingDateTime.clone().tz(SERVER_TIME_OFFSET);
     const formattedDate = gmtDate.format("YYYY-MM-DD HH:mm:ss");
+    console.log(
+        `Incoming Date (Client) ${client_time_zone} date:`,
+        incomingDateTime
+    );
+    console.log(
+        `Process Date (Server) ${SERVER_TIME_OFFSET} date:`,
+        formattedDate
+    );
     return formattedDate;
 };
 
-module.exports = { days, times, timeOffset, timeAdjusment };
+module.exports = { days, times, timeOffset };
