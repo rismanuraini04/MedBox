@@ -6,7 +6,12 @@ const ITEM_LIMIT = 5;
 const WEIGHT_LIMIT = 2;
 const { getUser } = require("../services/auth");
 const { sendWhatsappNotification } = require("../services/notification");
-const { days, timeOffset, timeAdjusment } = require("../services/timeformater");
+const {
+    days,
+    timeOffset,
+    timeAdjusment,
+    timeSubstractor,
+} = require("../services/timeformater");
 const moment = require("moment");
 require("moment-timezone");
 
@@ -72,8 +77,6 @@ exports.setSensorBoxRemider = async (req, res) => {
         const taskList = [];
         const scheduleList = [];
         const userID = await getUser(req);
-        const SERVER_TIME_OFFSET = timeOffset();
-        console.log("WORK");
 
         // MAKE SURE INCOMING DATE MATCH GMT
         const startDateTime = timeAdjusment(
@@ -84,6 +87,7 @@ exports.setSensorBoxRemider = async (req, res) => {
             `${finishDate} ${times.at(-1)}`,
             client_time_zone
         );
+        const timesInServerZone = timeSubstractor(times, client_time_zone);
 
         // Save Reminder To DB
         const firstSave = await prisma.reminder.create({
@@ -107,7 +111,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                 day.setDate(day.getDate() + 1)
             ) {
                 // Lopping semua data yang diberikan (terdapat 4 data nantinya)
-                times.forEach(async (time, i) => {
+                timesInServerZone.forEach(async (time, i) => {
                     const schedule = new Date(
                         day.getFullYear(),
                         day.getMonth(),
@@ -115,8 +119,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                         time.split(":")[0],
                         time.split(":")[1],
                         0,
-                        0,
-                        "Z"
+                        0
                     );
                     console.log(`Schedule set at ${schedule}`);
                     const taskId = Scheduler.setTask(
