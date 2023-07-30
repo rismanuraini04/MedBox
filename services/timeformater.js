@@ -42,4 +42,4 @@ const timeAdjusment = (inputTime, inputTimeZone) => {
     return formattedDate;
 };
 
-module.exports = { days, times, timeOffset };
+module.exports = { days, times, timeOffset, timeAdjusment };
