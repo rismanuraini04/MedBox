@@ -13,32 +13,12 @@ const numberControl = (id) => {
     });
 };
 
-const timeOffset = () => {
-    // Get the current date
-    const currentDate = new Date();
-
-    // Get the time offset in minutes
-    const timeOffsetInMinutes = currentDate.getTimezoneOffset();
-
-    // Convert the time offset to hours and minutes
-    const hoursOffset = Math.floor(Math.abs(timeOffsetInMinutes) / 60);
-    const minutesOffset = Math.abs(timeOffsetInMinutes) % 60;
-
-    // Determine the sign of the offset (positive or negative)
-    const sign = timeOffsetInMinutes < 0 ? "+" : "-";
-
-    // Create a string representation of the time offset
-    const timeOffsetString = `${sign}${hoursOffset
-        .toString()
-        .padStart(2, "0")}:${minutesOffset.toString().padStart(2, "0")}`;
-    return timeOffsetString;
-};
-
 // INFO: Control Form Sliding
 numberControl("week-interval-number-control");
 numberControl("days-interval-number-control");
 numberControl("reminder-number-control");
 
+const TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const xTimeDay = document.getElementById("x-times-day");
 const everyXDay = document.getElementById("every-x-day");
 const everyXWeek = document.getElementById("every-x-week");
@@ -49,7 +29,6 @@ const medicineName = document.getElementById("medicine");
 const sensorBoxID = document.getElementById("box-id").getAttribute("data-id");
 const reminderId = document.getElementById("reminder-id");
 const scheduleBtn = document.getElementById("schedule-btn");
-const TIME_OFFSET = timeOffset();
 let frequencyType = frequency.value;
 let scheduleCount = 0;
 
@@ -148,7 +127,7 @@ addButtton.addEventListener("click", async (e) => {
             interval: "0",
             times,
             reminder_type: "X_TIME_DAY",
-            client_time_offset: TIME_OFFSET,
+            client_time_zone: TIME_ZONE,
         },
     });
 
@@ -226,7 +205,7 @@ updateButtton.addEventListener("click", async (e) => {
                 interval: "0",
                 times,
                 reminder_type: "X_TIME_DAY",
-                client_time_offset: TIME_OFFSET,
+                client_time_zone: TIME_ZONE,
             },
             method: "PATCH",
         });

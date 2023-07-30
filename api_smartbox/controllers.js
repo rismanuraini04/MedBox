@@ -6,7 +6,9 @@ const ITEM_LIMIT = 5;
 const WEIGHT_LIMIT = 2;
 const { getUser } = require("../services/auth");
 const { sendWhatsappNotification } = require("../services/notification");
-const { days } = require("../services/timeformater");
+const { days, timeOffset } = require("../services/timeformater");
+const moment = require("moment");
+require("moment-timezone");
 
 exports.generateId = async (req, res) => {
     try {
@@ -65,11 +67,31 @@ exports.setSensorBoxRemider = async (req, res) => {
             times,
             reminder_type,
             sensorBoxID,
-            client_time_offset,
+            client_time_zone,
         } = req.body;
         const taskList = [];
         const scheduleList = [];
         const userID = await getUser(req);
+        const SERVER_TIME_OFFSET = timeOffset();
+        console.log("WORK");
+
+        // MAKE SURE INCOMING DATE MATCH GMT
+        let startDateTime = `${startDate} ${times[0]}`;
+        startDateTime = moment.tz(
+            startDateTime,
+            "YYYY-MM-DD HH:mm",
+            client_time_zone
+        );
+        const gmtDate = startDateTime.clone().tz(SERVER_TIME_OFFSET);
+        const formattedDate = gmtDate.format("YYYY-MM-DD HH:mm:ss");
+        console.log(
+            `Incoming Date (Client) ${client_time_zone} date:`,
+            startDateTime
+        );
+        console.log(
+            `Process Date (Server) ${SERVER_TIME_OFFSET} date:`,
+            formattedDate
+        );
 
         // Save Reminder To DB
         const firstSave = await prisma.reminder.create({
