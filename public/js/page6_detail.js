@@ -15,15 +15,34 @@ const formDetail = (data) => {
         xTimeDay.style.display = "block";
         daySchedule.style.display = "block";
 
+        // Time Adjusment, intial time value on offset UTC must be change in current user time zone
+        const userStartDate = timeAdjusment(
+            new Date(data.startDate).toISOString(),
+            data.server_time_zone,
+            Intl.DateTimeFormat().resolvedOptions().timeZone
+        );
+        const userFinishDate = timeAdjusment(
+            data.startDate,
+            data.server_time_zone,
+            Intl.DateTimeFormat().resolvedOptions().timeZone
+        );
+        const times = data.time.split(",");
+        const timesAdjusted = times.map((time) => {
+            return timeAdjusment(
+                new Date(time).toISOString(),
+                data.server_time_zone,
+                Intl.DateTimeFormat().resolvedOptions().timeZone
+            );
+        });
+
         // Set Another Value
         medicineName.value = data.name;
-        startDate.value = data.startDate.split("T")[0];
-        finishDate.value = data.finishDate.split("T")[0];
-        // console.log(data.time);
-        const times = data.time.split(",");
+        startDate.value = userStartDate.split("T")[0];
+        finishDate.value = userFinishDate.split("T")[0];
+
         scheduleCount = times.length - 1;
-        times.forEach((time, i) => {
-            xTimeDayArray[i].value = time.split(" ")[4];
+        timesAdjusted.forEach((time, i) => {
+            xTimeDayArray[i].value = String(new Date(time)).split(" ")[4];
             xTimeDayArray[i].setAttribute("data-select", "true");
             xTimeDayArray[i].parentElement.classList.remove("hidden");
             if (i == times.length - 1) {

@@ -14,3 +14,14 @@ const times = (date) => {
         minute: "numeric",
     }).format(new Date(date));
 };
+
+const timeAdjusment = (inputTime, inputTimeZone, targetTimeZone) => {
+    let incomingDateTime = moment.tz(
+        inputTime,
+        "YYYY-MM-DD HH:mm:ss Z",
+        inputTimeZone
+    );
+    const gmtDate = incomingDateTime.clone().tz(targetTimeZone);
+    const formattedDate = gmtDate.format("YYYY-MM-DDTHH:mm:ss.SSS");
+    return formattedDate;
+};

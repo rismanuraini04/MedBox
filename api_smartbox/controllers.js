@@ -121,7 +121,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                         0,
                         0
                     );
-                    console.log(`Schedule set at ${schedule}`);
+                    console.log(`Schedule set at `, schedule);
                     const taskId = Scheduler.setTask(
                         schedule,
                         async function () {
@@ -257,7 +257,10 @@ exports.getSensorBoxRemider = async (req, res) => {
         return resSuccess({
             res,
             title: "Success to get reminder detail",
-            data: data,
+            data:
+                data !== null
+                    ? { ...data, server_time_zone: timeOffset() }
+                    : null,
         });
     } catch (error) {
         return resError({ res, title: "Failed to get reminder detail" });
