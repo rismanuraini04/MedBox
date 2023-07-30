@@ -205,10 +205,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                         }
                     );
                     // Jika Tanggal Terakhir dan waktu terakhir, update status reminder menjadi false
-                    if (
-                        i === times.length - 1 &&
-                        String(day) == String(new Date(finishDate))
-                    ) {
+                    if (i === times.length - 1) {
                         const taskId = Scheduler.setTask(schedule, async () => {
                             await prisma.reminder.update({
                                 where: {
