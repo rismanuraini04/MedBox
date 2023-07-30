@@ -300,6 +300,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
             times,
             reminder_type,
             reminderId,
+            client_time_zone,
         } = req.body;
         const taskList = [];
         const scheduleList = [];
@@ -329,17 +330,28 @@ exports.updateSensorBoxRemider = async (req, res) => {
             Scheduler.removeTask(task);
         });
 
+        // MAKE SURE INCOMING DATE MATCH GMT
+        const startDateTime = timeAdjusment(
+            `${startDate} ${times[0]}`,
+            client_time_zone
+        );
+        const finishDateTime = timeAdjusment(
+            `${finishDate} ${times.at(-1)}`,
+            client_time_zone
+        );
+        const timesInServerZone = timeSubstractor(times, client_time_zone);
+
         if (reminder_type === "X_TIME_DAY") {
             // Buat Alarm Selama Hari Yang Di atur
             for (
                 // looping seluruh hari dari awal hingga akhir
-                let day = new Date(startDate);
-                day <= new Date(finishDate);
+                let day = new Date(startDateTime);
+                day <= new Date(finishDateTime);
                 day.setDate(day.getDate() + 1)
             ) {
                 // Lopping semua data yang diberikan (terdapat 4 data nantinya)
 
-                times.forEach(async (time, i) => {
+                timesInServerZone.forEach(async (time, i) => {
                     const schedule = new Date(
                         day.getFullYear(),
                         day.getMonth(),
@@ -347,8 +359,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
                         time.split(":")[0],
                         time.split(":")[1],
                         0,
-                        0,
-                        "Z"
+                        0
                     );
                     console.log(`Schedule set at ${schedule}`);
                     const taskId = Scheduler.setTask(
@@ -418,10 +429,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
                         }
                     );
                     // Jika Tanggal Terakhir dan waktu terakhir, update status reminder menjadi false
-                    if (
-                        i === times.length - 1 &&
-                        String(day) == String(new Date(finishDate))
-                    ) {
+                    if (i === times.length - 1) {
                         const taskId = Scheduler.setTask(schedule, async () => {
                             await prisma.reminder.update({
                                 where: {
@@ -447,8 +455,8 @@ exports.updateSensorBoxRemider = async (req, res) => {
             },
             data: {
                 name,
-                startDate: new Date(startDate),
-                finishDate: new Date(startDate),
+                startDate: new Date(startDateTime),
+                finishDate: new Date(finishDateTime),
                 interval,
                 reminder_type,
                 reminder_status: true,
