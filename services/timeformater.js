@@ -32,7 +32,7 @@ const timeAdjusment = (inputTime, inputTimeZone) => {
     const gmtDate = incomingDateTime.clone().tz(SERVER_TIME_OFFSET);
     const formattedDate = gmtDate.format("YYYY-MM-DD HH:mm:ss");
     console.log(
-        `Incoming Date (Client) ${client_time_zone} date:`,
+        `Incoming Date (Client) ${inputTimeZone} date:`,
         incomingDateTime
     );
     console.log(
