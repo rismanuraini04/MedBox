@@ -6,7 +6,7 @@ const ITEM_LIMIT = 5;
 const WEIGHT_LIMIT = 2;
 const { getUser } = require("../services/auth");
 const { sendWhatsappNotification } = require("../services/notification");
-const { days, timeOffset } = require("../services/timeformater");
+const { days, timeOffset, timeAdjusment } = require("../services/timeformater");
 const moment = require("moment");
 require("moment-timezone");
 
@@ -76,29 +76,21 @@ exports.setSensorBoxRemider = async (req, res) => {
         console.log("WORK");
 
         // MAKE SURE INCOMING DATE MATCH GMT
-        let startDateTime = `${startDate} ${times[0]}`;
-        startDateTime = moment.tz(
-            startDateTime,
-            "YYYY-MM-DD HH:mm",
+        const startDateTime = timeAdjusment(
+            `${startDate} ${times[0]}`,
             client_time_zone
         );
-        const gmtDate = startDateTime.clone().tz(SERVER_TIME_OFFSET);
-        const formattedDate = gmtDate.format("YYYY-MM-DD HH:mm:ss");
-        console.log(
-            `Incoming Date (Client) ${client_time_zone} date:`,
-            startDateTime
-        );
-        console.log(
-            `Process Date (Server) ${SERVER_TIME_OFFSET} date:`,
-            formattedDate
+        const finishDateTime = timeAdjusment(
+            `${startDate} ${times.at(-1)}`,
+            client_time_zone
         );
 
         // Save Reminder To DB
         const firstSave = await prisma.reminder.create({
             data: {
                 name,
-                startDate: new Date(startDate),
-                finishDate: new Date(startDate),
+                startDate: new Date(startDateTime),
+                finishDate: new Date(finishDateTime),
                 interval,
                 reminder_type,
                 reminder_status: true,
@@ -110,8 +102,8 @@ exports.setSensorBoxRemider = async (req, res) => {
             // Buat Alarm Selama Hari Yang Di atur
             for (
                 // looping seluruh hari dari awal hingga akhir
-                let day = new Date(startDate);
-                day <= new Date(finishDate);
+                let day = new Date(startDateTime);
+                day <= new Date(finishDateTime);
                 day.setDate(day.getDate() + 1)
             ) {
                 // Lopping semua data yang diberikan (terdapat 4 data nantinya)
