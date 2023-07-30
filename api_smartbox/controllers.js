@@ -619,6 +619,7 @@ exports.updateMedicineWeight = async (data, payload) => {
 exports.updateMedicineHistory = async (data, payload) => {
     try {
         const body = JSON.parse(data);
+        const schedule = body?.schedule;
         const userTakeMedicineOn = new Date().valueOf();
         console.log("NOW", userTakeMedicineOn);
 
@@ -631,7 +632,9 @@ exports.updateMedicineHistory = async (data, payload) => {
                 id: true,
                 sensorBox: {
                     where: {
-                        name: body.box,
+                        name: {
+                            equals: body.box,
+                        },
                     },
                     select: {
                         id: true,
@@ -661,6 +664,20 @@ exports.updateMedicineHistory = async (data, payload) => {
         // Lakukan Looping Setiap Schedulnya
         const reminderArray = lastReminder.time.split(",");
         // let i = 1;
+
+        await prisma.medicineHistory.create({
+            data: {
+                schedule: schedule,
+                status: "ONTIME",
+                SensorBox: {
+                    connect: {
+                        id: smartBox.sensorBox[0].id,
+                    },
+                },
+            },
+        });
+
+        /*
         reminderArray.forEach(async (time, i) => {
             i += 1;
             console.log(`----------------${i}----------------`);
@@ -742,6 +759,7 @@ exports.updateMedicineHistory = async (data, payload) => {
             }
             // i = i + 1;
         });
+        */
     } catch (error) {
         console.log(error);
     }
