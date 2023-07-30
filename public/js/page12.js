@@ -12,19 +12,19 @@ const historyTemplate = (data, server_time_zone) => {
     // This operation clean all not important message and give user clear description
 
     let reminderDescription = data.schedule.split("@").at(0);
-    if (data.status == "NOT_TAKEN") {
-        const reminderDate = reminderDescription.split(",")[1];
-        const fomratedReminderDate = timeAdjusment(
-            new Date(reminderDate).toISOString(),
-            server_time_zone,
-            Intl.DateTimeFormat().resolvedOptions().timeZone
-        );
 
-        reminderDescription =
-            String(reminderDescription.split(",")[0]) +
-            " " +
-            String(days(fomratedReminderDate));
-    }
+    const reminderDate = reminderDescription.split(",")[1];
+    const fomratedReminderDate = timeAdjusment(
+        new Date(reminderDate).toISOString(),
+        server_time_zone,
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
+
+    reminderDescription =
+        String(reminderDescription.split(",")[0]) +
+        " " +
+        String(days(fomratedReminderDate));
+
     return `
     <div class="history bg-secondary-color-2 p-4 rounded-9 d-flex justify-content-between align-items-center mt-4" data-id="${
         data.id
