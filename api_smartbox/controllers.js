@@ -511,7 +511,7 @@ exports.medicineHistory = async (req, res) => {
         return resSuccess({
             res,
             title: "Success get history list",
-            data: history,
+            data: { history, server_time_zone: timeOffset() },
         });
     } catch (error) {
         return resError({ res, title: "Failed to get medicine history" });
