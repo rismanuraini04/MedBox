@@ -8,6 +8,8 @@ const ICON = {
 };
 
 const historyTemplate = (data, server_time_zone) => {
+    const text = data.schedule.split("@").at(0);
+    console.log(text);
     return `
     <div class="history bg-secondary-color-2 p-4 rounded-9 d-flex justify-content-between align-items-center mt-4" data-id="${
         data.id
