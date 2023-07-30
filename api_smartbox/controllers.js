@@ -144,7 +144,7 @@ exports.setSensorBoxRemider = async (req, res) => {
                                 `reminder-${sensorBox.SmartBox.uniqCode}-${sensorBox.name}`,
                                 `${name} medicine schedule ${i + 1} (${
                                     sensorBox.name
-                                }) for, ${days(schedule)}@${name}`
+                                }) for, ${schedule}@${name}`
                             ); // publish data for mqtt
                             console.log(
                                 `Mqtt set reminder-${sensorBox.SmartBox.uniqCode}-${sensorBox.name}`
@@ -369,7 +369,7 @@ exports.updateSensorBoxRemider = async (req, res) => {
                                 `reminder-${reminder.SensorBox.SmartBox.uniqCode}-${reminder.SensorBox.name}`,
                                 `${name} medicine schedule ${i + 1} (${
                                     reminder.SensorBox.name
-                                }) for, ${days(schedule)}@${name}`
+                                }) for, ${schedule}@${name}`
                             ); // publish data for mqtt
                             console.log(
                                 `Mqtt set reminder-${reminder.SensorBox.SmartBox.uniqCode}`
